@@ -17,6 +17,8 @@
     "preset": "react-native"
   },
   "dependencies": {
+    "@types/react": "^16.0.38",
+    "@types/react-native": "^0.52.12",
     "react": "16.2.0",
     "react-native": "0.52.0"
   }
