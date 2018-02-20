@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 
 export class Create extends React.Component<{openNav: Function}, {}> {
   constructor(props: any) {
@@ -9,14 +9,10 @@ export class Create extends React.Component<{openNav: Function}, {}> {
   render() {
     return (
       <View style={styles.mainContent}>
-        <TouchableOpacity onPress={() => this.props.openNav()}>
-          <Text>Open Navbar</Text>
-        </TouchableOpacity>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#2e4458'}}>
-          <Image source={require('../images/logo.png')} style={{ width: 58, height: 45, marginTop: 10, marginBottom: 10 }} />
-        </View>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#2e4458', marginTop: 10, padding: 5}}>
-          <Text style={{color: 'white'}} >wutup</Text>
+        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#1b2835', height: 80}}>
+          <TouchableOpacity onPress={() => this.props.openNav()}>
+            <Text>Open Navbar</Text>
+          </TouchableOpacity>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, padding: 5}}>
           <Text style={{color: 'white'}} >heythere</Text>
