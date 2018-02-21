@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 
-export class Create extends React.Component<any, {}> {
+export class Dashboard extends React.Component<any, {}> {
   constructor(props: any) {
     super(props)
   }
@@ -15,7 +15,7 @@ export class Create extends React.Component<any, {}> {
           </TouchableOpacity>
         </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, padding: 5}}>
-          <Text style={{color: 'white'}} >heythere</Text>
+          <Text style={{color: 'white'}} >dashboard</Text>
         </View>
       </View>
     );

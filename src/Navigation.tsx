@@ -1,18 +1,26 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native'
 
-export class Menu extends React.Component {
+export class Menu extends React.Component<any, any> {
+  constructor(props: any) {
+    super(props)
+  }
   render() {
     return (
       <View style={styles.menuContent}>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#2e4458', padding: 10}}>
-          <Image source={require('../images/logo.png')} style={{ width: 48, height: 38, marginTop: 10, marginBottom: 10 }} />
+          <TouchableOpacity onPress={() => this.props.navigation.navigate('Details', { itemId: 86, otherParam: 'anything you want here' })} >
+            <Image source={require('../images/logo.png')} style={{ width: 48, height: 38, marginTop: 10, marginBottom: 10 }} />
+          </TouchableOpacity>
         </View>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#2e4458', marginTop: 18, margin: 12, padding: 8, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)'}}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Dashboard')} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#2e4458', marginTop: 18, margin: 12, padding: 8, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)'}}>
           <Text style={{color: 'white', fontSize: 16}} >wutup</Text>
-        </View>
-        <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, borderWidth: 1, marginLeft: 12, marginRight: 12, padding: 8, borderColor: 'yellow'}}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, borderWidth: 1, marginLeft: 12, marginRight: 12, padding: 8, borderColor: 'yellow'}}>
           <Text style={{color: 'yellow'}}>Add Wallet</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Settings')} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#2e4458', marginTop: 18, margin: 12, padding: 8, borderWidth: 1, borderColor: 'rgba(255, 255, 255, 0.2)'}}>
+          <Text style={{color: 'white', fontSize: 16}} >Settings</Text>
         </TouchableOpacity>
       </View>
     );
