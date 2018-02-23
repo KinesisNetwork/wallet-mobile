@@ -1,7 +1,15 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { Header } from './Navigation';
 
 export class Create extends React.Component<any, {}> {
+
+  static navigationOptions = (opt: any) => {
+    return {
+      header: <Header navigation={opt.navigation} />
+    }
+  }
+
   constructor(props: any) {
     super(props)
   }
