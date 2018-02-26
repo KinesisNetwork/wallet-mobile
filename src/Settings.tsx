@@ -1,11 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
-import { Header } from './Navigation';
+import { BackNav } from './Navigation';
 
 export class Settings extends React.Component<any, {}> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <Header navigation={opt.navigation} />
+      header: <BackNav title='Settings' navigation={opt.navigation} />
     }
   }
   constructor(props: any) {
