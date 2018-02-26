@@ -1,5 +1,6 @@
 import React from 'react';
 import { StatusBar, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native'
+import { Routes } from './Routing';
 let { NavigationActions } = require('react-navigation')
 let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
@@ -43,7 +44,7 @@ export class Header extends React.Component<any, any> {
         <View style={[styles.headerNavSections, {flexDirection: 'row', justifyContent: 'flex-start'}]}>
           <TouchableOpacity style={styles.headerNavButtons} onPress={
             () => {
-              this.props.navigation.navigate('Wallet')
+              this.props.navigation.navigate(Routes.walletScreen)
             }
           }>
             <SimpleLineIconsIcon name="wallet" size={22} color="#d1edff" />
@@ -53,10 +54,10 @@ export class Header extends React.Component<any, any> {
             <Image source={require('../images/logo.png')} style={{ tintColor: '#d1edff', width: 35, height: 28, marginTop: 12, marginBottom: 12 }} />
         </View>
         <View style={[styles.headerNavSections, {flexDirection: 'row', justifyContent: 'flex-end'}]}>
-          <TouchableOpacity style={styles.headerNavButtons} onPress={() => this.props.navigation.navigate('Create')}>
+          <TouchableOpacity style={styles.headerNavButtons} onPress={() => this.props.navigation.navigate(Routes.accountScreen)}>
               <SimpleLineIconsIcon name="user-follow" size={22} color="#d1edff" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerNavButtons} onPress={() => this.props.navigation.navigate('Settings')}>
+          <TouchableOpacity style={styles.headerNavButtons} onPress={() => this.props.navigation.navigate(Routes.settingsScreen)}>
               <SimpleLineIconsIcon name="options-vertical" size={22} color="#d1edff" />
           </TouchableOpacity>
         </View>

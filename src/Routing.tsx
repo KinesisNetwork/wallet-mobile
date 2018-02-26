@@ -6,19 +6,34 @@ import { Settings } from './Settings'
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
 
+export const enum Routes {
+  accountScreen = 'Account Screen',
+  walletScreen = 'Wallet Screen',
+  dashboardScreen = 'Dashboard Screen',
+  settingsScreen = 'Settings Screen',
+  accountGenerate = 'Generate',
+  accountImport = 'Import',
+  selectNetwork = 'Select Network',
+  addNetwork = 'Add Network',
+  dashboardBalances = 'Balances',
+  dashboardTransfer = 'Transfer',
+  dashboardTransactions = 'Transactions',
+  walletList = 'Wallet List',
+}
+
 let CreateAccount = TabNavigator(
   {
-    Generate: { screen: Create },
-    Import: { screen: Create },
+    [Routes.accountGenerate]: { screen: Create },
+    [Routes.accountImport]: { screen: Create },
   },
   {
     navigationOptions: ({ navigation }: any) => ({
       tabBarIcon: ({ focused, tintColor }: any) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === 'Import') {
+        if (routeName === Routes.accountImport) {
           iconName = `login`;
-        } else if (routeName === 'Generate') {
+        } else if (routeName === Routes.accountGenerate) {
           iconName = `user-follow`;
         }
         // You can return any component that you like here! We usually use an
@@ -50,17 +65,17 @@ let CreateAccount = TabNavigator(
 
 let SettingsScreen = TabNavigator(
   {
-    'Select Network': { screen: Settings },
-    'Add Network': { screen: Settings },
+    [Routes.selectNetwork]: { screen: Settings },
+    [Routes.addNetwork]: { screen: Settings },
   },
   {
     navigationOptions: ({ navigation }: any) => ({
       tabBarIcon: ({ focused, tintColor }: any) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === 'Select Network') {
+        if (routeName === Routes.selectNetwork) {
           iconName = `globe`;
-        } else if (routeName === 'Add Network') {
+        } else if (routeName === Routes.addNetwork) {
           iconName = `globe-alt`;
         }
         // You can return any component that you like here! We usually use an
@@ -91,22 +106,22 @@ let SettingsScreen = TabNavigator(
 );
 
 
-let WalletScreen = TabNavigator(
+let DashboardScreen = TabNavigator(
   {
-    'Balances': { screen: Dashboard },
-    'Transfer': { screen: Dashboard },
-    'Transactions': { screen: Dashboard },
+    [Routes.dashboardBalances]: { screen: Dashboard },
+    [Routes.dashboardTransfer]: { screen: Dashboard },
+    [Routes.dashboardTransactions]: { screen: Dashboard }
   },
   {
     navigationOptions: ({ navigation }: any) => ({
       tabBarIcon: ({ focused, tintColor }: any) => {
         const { routeName } = navigation.state;
         let iconName;
-        if (routeName === 'Balances') {
+        if (routeName === Routes.dashboardBalances) {
           iconName = `wallet`;
-        } else if (routeName === 'Transfer') {
+        } else if (routeName === Routes.dashboardTransfer) {
           iconName = `logout`;
-        } else if (routeName === 'Transactions') {
+        } else if (routeName === Routes.dashboardTransactions) {
           iconName = `tag`;
         }
 
@@ -138,14 +153,14 @@ let WalletScreen = TabNavigator(
 );
 
 let WalletStack = StackNavigator({
-    WalletList: {
+    [Routes.walletList]: {
       screen: WalletList
     },
-    WalletScreen: {
-      screen: WalletScreen
+    [Routes.dashboardScreen]: {
+      screen: DashboardScreen
     },
   },{
-    initialRouteName: 'WalletList',
+    initialRouteName: Routes.walletList,
     headerMode: 'none',
     cardStyle: {
       backgroundColor: '#000'
@@ -154,17 +169,17 @@ let WalletStack = StackNavigator({
 );
 
 let RootStack = StackNavigator({
-    Settings: {
+    [Routes.settingsScreen]: {
       screen: SettingsScreen
     },
-    Wallet: {
+    [Routes.walletScreen]: {
       screen: WalletStack
     },
-    Create: {
+    [Routes.accountScreen]: {
       screen: CreateAccount
     },
   },{
-    initialRouteName: 'Create',
+    initialRouteName: Routes.accountScreen,
     headerMode: 'float',
     cardStyle: {
       backgroundColor: '#000'

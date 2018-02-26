@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { BackNav } from './Navigation';
+import { Routes } from './Routing'
 
 export class Dashboard extends React.Component<any, {}> {
   static navigationOptions = (opt: any) => {
@@ -39,11 +40,11 @@ export class WalletList extends React.Component<any, {}> {
       <View style={styles.drawerContent}>
         <View style={{flex: 1}}>
           <TouchableOpacity onPress={() => {
-            this.props.navigation.navigate('Balances')
+            this.props.navigation.navigate(Routes.dashboardScreen)
           }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 18, margin: 12, padding: 8}}>
             <Text style={{color: 'white', fontSize: 16}} >wutupyos</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('Create')} style={{
+          <TouchableOpacity onPress={() => this.props.navigation.navigate(Routes.accountScreen)} style={{
             flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, borderWidth: 1, marginLeft: 12, marginRight: 12, padding: 8, borderColor: 'yellow'
           }}>
             <Text style={{color: 'yellow'}}>Add Wallet</Text>
