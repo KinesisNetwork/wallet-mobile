@@ -17,13 +17,8 @@ export class Create extends React.Component<any, {}> {
   render() {
     return (
       <View style={styles.mainContent}>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#1b2835', height: 80}}>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate('DrawerOpen')}>
-            <Text>Open Navbar</Text>
-          </TouchableOpacity>
-        </View>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, padding: 5}}>
-          <Text style={{color: 'white'}} >heythere</Text>
+          <Text style={{color: 'white'}} ></Text>
         </View>
       </View>
     );

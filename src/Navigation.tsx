@@ -1,5 +1,6 @@
 import React from 'react';
 import { StatusBar, StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native'
+let { NavigationActions } = require('react-navigation')
 let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
 
@@ -11,7 +12,11 @@ export class BackNav extends React.Component<any, any> {
     return (
       <View style={[styles.headerContent, {paddingHorizontal: 5}]}>
         <StatusBar barStyle="light-content"/>
-        <TouchableOpacity style={{position: 'absolute', zIndex:3, paddingLeft: 20, paddingRight: 30}} onPress={() => this.props.navigation.goBack()}>
+        <TouchableOpacity style={{position: 'absolute', zIndex:3, paddingLeft: 20, paddingRight: 30}} onPress={
+          () => {
+            this.props.navigation.dispatch(NavigationActions.back())
+          }
+        }>
           <IoniconsIcon name='ios-arrow-back-outline' size={21} color='#d1edff' />
         </TouchableOpacity>
         <View style={{
@@ -45,7 +50,7 @@ export class Header extends React.Component<any, any> {
           </TouchableOpacity>
         </View>
         <View style={[styles.headerNavSections, {alignItems: 'center'}]}>
-          <Image source={require('../images/logo.png')} style={{ tintColor: '#d1edff', width: 35, height: 28, marginTop: 12, marginBottom: 12 }} />
+            <Image source={require('../images/logo.png')} style={{ tintColor: '#d1edff', width: 35, height: 28, marginTop: 12, marginBottom: 12 }} />
         </View>
         <View style={[styles.headerNavSections, {flexDirection: 'row', justifyContent: 'flex-end'}]}>
           <TouchableOpacity style={styles.headerNavButtons} onPress={() => this.props.navigation.navigate('Create')}>
