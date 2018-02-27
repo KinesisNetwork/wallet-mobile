@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, TextInput, Text, View } from 'react-native'
+import { StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { Header } from './Navigation';
 import { AppState, Routes } from './Routing';
 import { encryptPrivateKey } from './services/encryption';
@@ -38,7 +38,7 @@ export class Create extends React.Component<{screenProps: {
     let encryptedPrivateKey = encryptPrivateKey(privateKey, password)
     // return addNewWallet(accountKey, encryptedPrivateKey)
     //   .then((walletList) => {
-    console.warn(encryptedPrivateKey, accountKey)
+    console.warn('hello', encryptedPrivateKey, 'there', accountKey)
     // this.props.screenProp.setWalletList(walletList)
     // this.props.navigation.navigate(Routes.walletList, {walletIndex: 0})
       // }, (err: any) => {
@@ -122,13 +122,21 @@ export class CreateAccountPresentation extends React.Component<{
 
   render() {
     return (
-        <View>
-          <Text>Wallet Password</Text>
-          <TextInput onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
-          <Text>Repeat Wallet Password</Text>
-          <TextInput onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+        <View style={styles.mainContent}>
+          <Text style={{color: 'white', marginBottom: 5}}>Wallet Password</Text>
+          <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+          <Text style={{color: 'white', marginBottom: 5}}>Repeat Wallet Password</Text>
+          <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
           <Button title='Create Account' onPress={() => this.props.generate()} />
         </View>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#1f2d3b',
+    padding: 15
+  },
+});
