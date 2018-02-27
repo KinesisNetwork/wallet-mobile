@@ -86,6 +86,20 @@ let CreateAccount = TabNavigator(
   }
 );
 
+class CreateAccountWrapper extends React.Component<any, any> {
+  constructor (props: any) { super(props) }
+  static navigationOptions = Create.navigationOptions;
+  // Pass props to children
+  render() {
+    return <CreateAccount
+      screenProps={{
+          appState: this.props.screenProps.appState,
+          setWalletList: this.props.screenProps.setWalletList
+      }}
+      />
+  }
+}
+
 let SettingsScreen = TabNavigator(
   {
     [Routes.selectNetwork]: { screen: Settings },
@@ -188,6 +202,20 @@ let DashboardScreen = TabNavigator(
   }
 );
 
+class WalletScreenWrapper extends React.Component<any, any> {
+  constructor (props: any) { super(props) }
+  static navigationOptions = WalletList.navigationOptions;
+  // Pass props to children
+  render() {
+    return <WalletStack
+        screenProps={{
+          rootNavigation: this.props.navigation,
+          appState: this.props.screenProps.appState
+        }}
+      />
+  }
+}
+
 let WalletStack = StackNavigator({
     [Routes.walletList]: {
       screen: WalletList
@@ -204,15 +232,16 @@ let WalletStack = StackNavigator({
   }
 );
 
+
 let RootStack = StackNavigator({
     [Routes.settingsScreen]: {
       screen: SettingsScreenWrapper
     },
     [Routes.walletScreen]: {
-      screen: WalletStack
+      screen: WalletScreenWrapper
     },
     [Routes.accountScreen]: {
-      screen: CreateAccount
+      screen: CreateAccountWrapper
     },
   },{
     initialRouteName: Routes.accountScreen,
@@ -231,12 +260,17 @@ export default class App extends React.Component<null, AppState> {
   public changeConnection (connection: any) {
     this.setState({connection})
   }
+  public setWalletList (walletList: Wallet[]): void {
+    console.warn(walletList, 'walletList')
+    this.setState({walletList})
+  }
   render() {
     return <View style={{flex: 1, backgroundColor: '#000'}}>
       <RootStack
         screenProps={{
           appState: this.state,
           changeConnection: this.changeConnection.bind(this),
+          setWalletList: this.setWalletList.bind(this)
         }}
       />
     </View>

@@ -38,7 +38,11 @@ export class Create extends React.Component<{screenProps: {
     let encryptedPrivateKey = encryptPrivateKey(privateKey, password)
     // return addNewWallet(accountKey, encryptedPrivateKey)
     //   .then((walletList) => {
-    console.warn('hello', encryptedPrivateKey, 'there', accountKey)
+    this.props.screenProps.setWalletList(this.props.screenProps.appState.walletList.concat({
+      publicKey: accountKey,
+      encryptedPrivateKey: encryptedPrivateKey
+    }))
+
     // this.props.screenProp.setWalletList(walletList)
     // this.props.navigation.navigate(Routes.walletList, {walletIndex: 0})
       // }, (err: any) => {
@@ -115,8 +119,7 @@ export class CreateAccountPresentation extends React.Component<{
   handlePrivate: Function,
   handleVerifyPassword: Function,
   handlePassword: Function,
-}, {}> {
-  constructor (props: any) {
+}, {}> { constructor (props: any) {
     super(props)
   }
 

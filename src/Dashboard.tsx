@@ -1,7 +1,8 @@
+import * as _ from 'lodash'
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { BackNav } from './Navigation';
-import { Routes } from './Routing'
+import { Routes, Wallet } from './Routing'
 
 export class Dashboard extends React.Component<any, {}> {
   static navigationOptions = (opt: any) => {
@@ -14,10 +15,11 @@ export class Dashboard extends React.Component<any, {}> {
   }
 
   render() {
+    let walletId = _.get(this.props, 'navigation.state.params.walletIndex', 'no')
     return (
       <View style={styles.mainContent}>
         <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, padding: 5}}>
-          <Text style={{color: 'white'}} >dashboard {this.props.walletId}</Text>
+          <Text style={{color: 'white'}} >dashboard {walletId}</Text>
         </View>
       </View>
     );
@@ -39,12 +41,16 @@ export class WalletList extends React.Component<any, {}> {
     return (
       <View style={styles.drawerContent}>
         <View style={{flex: 1}}>
-          <TouchableOpacity onPress={() => {
-            this.props.navigation.navigate(Routes.dashboardScreen)
-          }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 18, margin: 12, padding: 8}}>
-            <Text style={{color: 'white', fontSize: 16}} >wutupyos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.props.navigation.navigate(Routes.accountScreen)} style={{
+          { _.map(this.props.screenProps.appState.walletList, (wallet: Wallet, index) => {
+            return (
+              <TouchableOpacity key={index} onPress={() => {
+                this.props.navigation.navigate(Routes.dashboardScreen, { walletIndex: index })
+              }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 18, margin: 12, padding: 8}}>
+                <Text style={{color: 'white', fontSize: 16}} >{wallet.publicKey}</Text>
+              </TouchableOpacity>
+            )
+          })}
+          <TouchableOpacity onPress={() => this.props.screenProps.rootNavigation.navigate(Routes.accountScreen)} style={{
             flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, borderWidth: 1, marginLeft: 12, marginRight: 12, padding: 8, borderColor: 'yellow'
           }}>
             <Text style={{color: 'yellow'}}>Add Wallet</Text>
