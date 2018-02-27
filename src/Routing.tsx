@@ -216,12 +216,25 @@ class WalletScreenWrapper extends React.Component<any, any> {
   }
 }
 
+class DashboardScreenWrapper extends React.Component<any, any> {
+  constructor (props: any) { super(props) }
+  static navigationOptions = Dashboard.navigationOptions;
+  // Pass props to children
+  render() {
+    return <DashboardScreen
+        screenProps={{
+          appState: this.props.screenProps.appState
+        }}
+      />
+  }
+}
+
 let WalletStack = StackNavigator({
     [Routes.walletList]: {
       screen: WalletList
     },
     [Routes.dashboardScreen]: {
-      screen: DashboardScreen
+      screen: DashboardScreenWrapper
     },
   },{
     initialRouteName: Routes.walletList,

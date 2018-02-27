@@ -1,30 +1,91 @@
 import * as _ from 'lodash'
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { getActiveWallet, getPrivateKey } from './helpers/wallets';
 import { BackNav } from './Navigation';
-import { Routes, Wallet } from './Routing'
+import { Routes, Wallet, AppState } from './Routing'
+let StellarSdk = require('stellar-sdk')
 
-export class Dashboard extends React.Component<any, {}> {
+export class Dashboard extends React.Component<{ screenProps: {appState: any}}, any> {
   static navigationOptions = (opt: any) => {
     return {
       header: <BackNav title='Wallet Dashboard' navigation={opt.navigation} />
     }
   }
-  constructor(props: any) {
+
+  constructor (props: any) {
+    super(props)
+    this.state = { account: null, kinesisBalance: 0, accountActivated: false }
+  }
+
+  componentDidMount() {
+    this.loadBalances(this.props)
+  }
+
+  componentWillReceiveProps(nextProps: any) {
+    if (this.props !== nextProps) {
+      this.loadBalances(nextProps)
+    }
+  }
+
+  // React antipattern (this is used via ref)
+  public reloadBalances() {
+    this.loadBalances(this.props)
+  }
+
+  public async loadBalances(props: any) {
+    try {
+      const server = new StellarSdk.Server(props.appState.connection.horizonServer, {allowHttp: true})
+      const account = await server.loadAccount(getActiveWallet(props.appState).publicKey)
+      const kinesisBalance = Number(account.balances.filter((b: any) => b.asset_type === 'native')[0].balance)
+      this.setState({account, kinesisBalance, accountActivated: true})
+    } catch (e) {
+      this.setState({accountActivated: false, kinesisBalance: 0})
+    }
+  }
+
+  render() {
+    return (
+      <BalancesPresentation
+        appState={this.props.screenProps.appState}
+        kinesisBalance={this.state.kinesisBalance}
+        accountActivated={this.state.accountActivated}
+      />
+    )
+  }
+
+}
+
+export class BalancesPresentation extends React.Component<{
+  appState: AppState,
+  kinesisBalance: number,
+  accountActivated: boolean
+}, {}> {
+  constructor (props: any) {
     super(props)
   }
 
   render() {
-    let walletId = _.get(this.props, 'navigation.state.params.walletIndex', 'no')
+    let activeWallet = getActiveWallet(this.props.appState) || {}
     return (
-      <View style={styles.mainContent}>
-        <View style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 0, padding: 5}}>
-          <Text style={{color: 'white'}} >dashboard {walletId}</Text>
+      <View style={{flex: 1, backgroundColor: 'white'}}>
+        <Text>Public Key: </Text>
+        <Text>{activeWallet.publicKey}</Text>
+        <Text>Reveal Private Key: </Text>
+        <Text>{getPrivateKey(this.props.appState, activeWallet) || 'Please enter your wallet password'}</Text>
+        <View>
+          <Text>Account activated: </Text>
+          <Text>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
+        </View>
+        <View>
+          <Text>Kinesis Balance: </Text>
+          <Text>{this.props.kinesisBalance}</Text>
         </View>
       </View>
-    );
+    )
   }
 }
+
 
 
 export class WalletList extends React.Component<any, {}> {
