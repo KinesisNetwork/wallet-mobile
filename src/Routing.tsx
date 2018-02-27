@@ -2,9 +2,32 @@ import React from 'react'
 import { View } from 'react-native'
 import { Create } from './Create'
 import { WalletList, Dashboard } from './Dashboard'
-import { Settings } from './Settings'
+import { defaultConnections, Connection,  Settings } from './Settings'
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
+
+export interface AppState {
+  walletList: Wallet[],
+  passwordMap: PasswordMap,
+  connection: Connection
+}
+
+export interface PasswordMap {
+  [accountId: string]: {
+    timestamp: number,
+    password: string
+  }
+}
+
+export interface ViewParams {
+  walletIndex?: number
+}
+
+export interface Wallet {
+  publicKey: string,
+  encryptedPrivateKey: string,
+  accountName?: string
+}
 
 export const enum Routes {
   accountScreen = 'Account Screen',
@@ -105,6 +128,19 @@ let SettingsScreen = TabNavigator(
   }
 );
 
+class SettingsScreenWrapper extends React.Component<any, any> {
+  constructor (props: any) { super(props) }
+  static navigationOptions = Settings.navigationOptions;
+  // Pass props to children
+  render() {
+    return <SettingsScreen
+      screenProps={{
+          appState: this.props.screenProps.appState,
+          changeConnection: this.props.screenProps.changeConnection
+      }}
+      />
+  }
+}
 
 let DashboardScreen = TabNavigator(
   {
@@ -170,7 +206,7 @@ let WalletStack = StackNavigator({
 
 let RootStack = StackNavigator({
     [Routes.settingsScreen]: {
-      screen: SettingsScreen
+      screen: SettingsScreenWrapper
     },
     [Routes.walletScreen]: {
       screen: WalletStack
@@ -187,11 +223,23 @@ let RootStack = StackNavigator({
   }
 );
 
-
-
-export default class App extends React.Component {
+export default class App extends React.Component<null, AppState> {
+  constructor (props: any) {
+    super(props)
+    this.state = {walletList: [], connection: defaultConnections[0], passwordMap: {}}
+  }
+  public changeConnection (connection: any) {
+    this.setState({connection})
+  }
   render() {
-    return <View style={{flex: 1, backgroundColor: '#000'}}><RootStack/></View>
+    return <View style={{flex: 1, backgroundColor: '#000'}}>
+      <RootStack
+        screenProps={{
+          appState: this.state,
+          changeConnection: this.changeConnection.bind(this),
+        }}
+      />
+    </View>
   }
 }
 

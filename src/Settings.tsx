@@ -24,15 +24,18 @@ export let defaultConnections: Connection[] = [{
   connectionName: 'Stellar Test Network'
 }]
 
-export class Settings extends React.Component<{appState: any, changeConnection: Function}, {horizonServer: string, networkPassphrase: string, connectionName: string}> {
+export class Settings extends React.Component<{screenProps: {appState: any, changeConnection: Function}}, {horizonServer: string, networkPassphrase: string, connectionName: string}> {
   static navigationOptions = (opt: any) => {
     return {
       header: <BackNav title='Settings' navigation={opt.navigation} />
     }
   }
-  constructor (props) {
+  constructor (props: any) {
     super(props)
     this.state = {horizonServer: '', networkPassphrase: '', connectionName: ''}
+  }
+  public componentWillReceiveProps(nextProps: any) {
+    console.warn(nextProps)
   }
 
   public async changeHorizonServer(horizonServer: string) {
@@ -48,38 +51,16 @@ export class Settings extends React.Component<{appState: any, changeConnection: 
   }
 
   public async changeConnection(connection: Connection) {
-    // this.props.changeConnection(connection)
+    this.props.screenProps.changeConnection(connection)
     console.warn('Success', `Connected to ${connection.connectionName}`, 'success')
-  }
-
-  public async addConnection(ev) {
-    ev.preventDefault()
-    if (!this.state.connectionName) {
-    }
-    if (!this.state.horizonServer) {
-    }
-    if (!this.state.networkPassphrase) {
-    }
-
-    defaultConnections.push({
-      horizonServer: this.state.horizonServer,
-      networkPassphrase: this.state.networkPassphrase,
-      connectionName: this.state.connectionName,
-    })
-    this.setState({
-      horizonServer: '',
-      networkPassphrase: '',
-      connectionName: '',
-    })
   }
 
   render() {
     return (
       <SettingsPresentation
-        appState={this.props.appState}
+        appState={this.props.screenProps.appState}
         changeConnectionName={this.changeConnectionName.bind(this)}
         changeConnection={this.changeConnection.bind(this)}
-        addConnection={this.addConnection.bind(this)}
         changeNetworkPassphrase={this.changeNetworkPassphrase.bind(this)}
         changeHorizonServer={this.changeHorizonServer.bind(this)}
         horizonServer={this.state.horizonServer}
