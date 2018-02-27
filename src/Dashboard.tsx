@@ -35,11 +35,13 @@ export class Dashboard extends React.Component<{ screenProps: {appState: any}}, 
 
   public async loadBalances(props: any) {
     try {
-      const server = new StellarSdk.Server(props.appState.connection.horizonServer, {allowHttp: true})
-      const account = await server.loadAccount(getActiveWallet(props.appState).publicKey)
+      const server = new StellarSdk.Server(props.screenProps.appState.connection.horizonServer, {allowHttp: true})
+      const account = await server.loadAccount(getActiveWallet(props.screenProps.appState).publicKey)
+      console.warn(account)
       const kinesisBalance = Number(account.balances.filter((b: any) => b.asset_type === 'native')[0].balance)
       this.setState({account, kinesisBalance, accountActivated: true})
     } catch (e) {
+      console.warn(e.message)
       this.setState({accountActivated: false, kinesisBalance: 0})
     }
   }
