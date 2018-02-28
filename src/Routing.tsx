@@ -1,6 +1,6 @@
 import React from 'react'
 import { View } from 'react-native'
-import { Create } from './Create'
+import { GenerateAccount, ImportAccount } from './CreateAccount'
 import { Balances } from './Balances'
 import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
@@ -48,8 +48,8 @@ export const enum Routes {
 
 let CreateAccount = TabNavigator(
   {
-    [Routes.accountGenerate]: { screen: Create },
-    [Routes.accountImport]: { screen: Create },
+    [Routes.accountGenerate]: { screen: GenerateAccount },
+    [Routes.accountImport]: { screen: ImportAccount },
   },
   {
     navigationOptions: ({ navigation }: any) => ({
@@ -90,7 +90,7 @@ let CreateAccount = TabNavigator(
 
 class CreateAccountWrapper extends React.Component<any, any> {
   constructor (props: any) { super(props) }
-  static navigationOptions = Create.navigationOptions;
+  static navigationOptions = GenerateAccount.navigationOptions;
   // Pass props to children
   render() {
     return <CreateAccount

@@ -1,20 +1,44 @@
 import React from 'react';
-import { StyleSheet, Button, TextInput, Text, View } from 'react-native'
+import { ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { Header } from './Navigation';
 import { AppState, Routes } from './Routing';
 import { encryptPrivateKey } from './services/encryption';
 let StellarBase = require('stellar-sdk')
+type AccountView = 'import' | 'generate'
 
-export class Create extends React.Component<{screenProps: {
-  setWalletList: Function, setAccountKeys: Function, appState: AppState
-}, navigation: any}, {
-  privateKey: string, publicKey: string, password: string, passwordVerify: string
-}> {
+export class GenerateAccount extends React.Component<any, any> {
   static navigationOptions = (opt: any) => {
     return {
       header: <Header navigation={opt.navigation} />
     }
   }
+  constructor (props: any) {
+    super(props)
+  }
+  render() {
+    return (<CreateAccount {...this.props} accountView='generate' />)
+  }
+}
+
+export class ImportAccount extends React.Component<any, any> {
+  static navigationOptions = (opt: any) => {
+    return {
+      header: <Header navigation={opt.navigation} />
+    }
+  }
+  constructor (props: any) {
+    super(props)
+  }
+  render() {
+    return (<CreateAccount {...this.props} accountView='import' />)
+  }
+}
+
+export class CreateAccount extends React.Component<{screenProps: {
+  setWalletList: Function, setAccountKeys: Function, appState: AppState
+}, navigation: any, accountView: AccountView}, {
+  privateKey: string, publicKey: string, password: string, passwordVerify: string
+}> {
   constructor (props: any) {
     super(props)
     this.state = {
@@ -76,10 +100,6 @@ export class Create extends React.Component<{screenProps: {
 
   }
 
-  public handleSubmit() {
-    this.importKeys()
-  }
-
   public handlePublic(publicKey: string) {
     this.setState({publicKey: publicKey})
   }
@@ -99,8 +119,9 @@ export class Create extends React.Component<{screenProps: {
   render() {
     return (
       <CreateAccountPresentation
+        accountView={this.props.accountView}
         appState={this.props.screenProps.appState}
-        handleSubmit={this.handleSubmit.bind(this)}
+        importKeys={this.importKeys.bind(this)}
         generate={this.generate.bind(this)}
         handlePublic={this.handlePublic.bind(this)}
         handlePrivate={this.handlePrivate.bind(this)}
@@ -112,26 +133,45 @@ export class Create extends React.Component<{screenProps: {
 }
 
 export class CreateAccountPresentation extends React.Component<{
+  accountView: AccountView,
   appState: AppState,
-  handleSubmit: Function,
+  importKeys: Function,
   generate: Function,
   handlePublic: Function,
   handlePrivate: Function,
   handleVerifyPassword: Function,
   handlePassword: Function,
-}, {}> { constructor (props: any) {
+}, {}> {
+  constructor (props: any) {
     super(props)
   }
 
   render() {
     return (
-        <View style={styles.mainContent}>
-          <Text style={{color: 'white', marginBottom: 5}}>Wallet Password</Text>
-          <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
-          <Text style={{color: 'white', marginBottom: 5}}>Repeat Wallet Password</Text>
-          <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
-          <Button title='Create Account' onPress={() => this.props.generate()} />
-        </View>
+        <ScrollView style={styles.mainContent}>
+        {(this.props.accountView === 'generate') && (
+          <View style={{flex: 1}}>
+            <Text style={{color: 'white', marginBottom: 5}}>Wallet Password</Text>
+            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+            <Text style={{color: 'white', marginBottom: 5}}>Repeat Wallet Password</Text>
+            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+            <Button title='Create Account' onPress={() => this.props.generate()} />
+          </View>
+        )}
+        {(this.props.accountView === 'import') && (
+          <View style={{flex: 1}}>
+            <Text style={{color: 'white', marginBottom: 5}}>Public Key</Text>
+            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePublic(text)} />
+            <Text style={{color: 'white', marginBottom: 5}}>Private Key</Text>
+            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePrivate(text)} />
+            <Text style={{color: 'white', marginBottom: 5}}>Wallet Password</Text>
+            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+            <Text style={{color: 'white', marginBottom: 5}}>Repeat Wallet Password</Text>
+            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+            <Button title='Import keys' onPress={() => this.props.importKeys()} />
+          </View>
+        )}
+        </ScrollView>
     )
   }
 }
