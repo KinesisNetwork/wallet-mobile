@@ -5,6 +5,7 @@ import { Balances } from './Balances'
 import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
 import { defaultConnections, Connection,  Settings } from './Settings'
+import { Transfer } from './Transfer';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
 
@@ -161,7 +162,7 @@ class SettingsScreenWrapper extends React.Component<any, any> {
 let DashboardScreen = TabNavigator(
   {
     [Routes.dashboardBalances]: { screen: Balances },
-    [Routes.dashboardTransfer]: { screen: Balances },
+    [Routes.dashboardTransfer]: { screen: Transfer },
     [Routes.dashboardTransactions]: { screen: Transactions }
   },
   {
