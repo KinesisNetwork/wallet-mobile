@@ -1,7 +1,9 @@
 import React from 'react'
 import { View } from 'react-native'
 import { Create } from './Create'
-import { WalletList, Dashboard } from './Dashboard'
+import { Balances } from './Balances'
+import { Transactions } from './Transactions'
+import { WalletList } from './WalletList'
 import { defaultConnections, Connection,  Settings } from './Settings'
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
@@ -158,9 +160,9 @@ class SettingsScreenWrapper extends React.Component<any, any> {
 
 let DashboardScreen = TabNavigator(
   {
-    [Routes.dashboardBalances]: { screen: Dashboard },
-    [Routes.dashboardTransfer]: { screen: Dashboard },
-    [Routes.dashboardTransactions]: { screen: Dashboard }
+    [Routes.dashboardBalances]: { screen: Balances },
+    [Routes.dashboardTransfer]: { screen: Balances },
+    [Routes.dashboardTransactions]: { screen: Transactions }
   },
   {
     navigationOptions: ({ navigation }: any) => ({
@@ -218,7 +220,7 @@ class WalletScreenWrapper extends React.Component<any, any> {
 
 class DashboardScreenWrapper extends React.Component<any, any> {
   constructor (props: any) { super(props) }
-  static navigationOptions = Dashboard.navigationOptions;
+  static navigationOptions = Balances.navigationOptions;
   // Pass props to children
   render() {
     return <DashboardScreen
