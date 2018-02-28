@@ -14,7 +14,7 @@ export class Balances extends React.Component<{ screenProps: {appState: any}}, a
 
   constructor (props: any) {
     super(props)
-    this.state = { account: null, kinesisBalance: 0, accountActivated: false }
+    this.state = { account: null, kinesisBalance: 0, accountActivated: false, password: '' }
   }
 
   componentDidMount() {
@@ -47,8 +47,10 @@ export class Balances extends React.Component<{ screenProps: {appState: any}}, a
 
   render() {
     return (
+      let activeWallet = getActiveWallet(this.props.screenProps.appState) || {}
       <BalancesPresentation
         appState={this.props.screenProps.appState}
+        privateKey={activeWallet}
         kinesisBalance={this.state.kinesisBalance}
         accountActivated={this.state.accountActivated}
       />
@@ -73,7 +75,16 @@ export class BalancesPresentation extends React.Component<{
         <Text>Public Key: </Text>
         <Text>{activeWallet.publicKey}</Text>
         <Text>Reveal Private Key: </Text>
-        <Text>{getPrivateKey(this.props.appState, activeWallet) || 'Please enter your wallet password'}</Text>
+
+        {(this.props.privateKey) ? (
+          <Text>{getPrivateKey(this.props.appState, activeWallet) || 'Please enter your wallet password'}</Text>
+        ) : (
+          <View>
+            <TextInput value={this.props.password} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleMemo(text)} />
+            <Button title='Transfer' onPress={() => this.props.viewPrivateKey()} />
+          </View>
+        )}
+
         <View>
           <Text>Account activated: </Text>
           <Text>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
