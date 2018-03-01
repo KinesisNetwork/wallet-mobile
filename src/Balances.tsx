@@ -4,6 +4,7 @@ import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { AppState } from './Routing'
 import { decryptPrivateKey } from './services/encryption';
+let { NavigationActions } = require('react-navigation')
 let StellarSdk = require('stellar-sdk')
 
 export class Balances extends React.Component<{ screenProps: {appState: any}, navigation?: any}, any> {
@@ -46,6 +47,10 @@ export class Balances extends React.Component<{ screenProps: {appState: any}, na
     this.setState({password})
   }
 
+  public deleteWallet() {
+    this.props.navigation.dispatch(NavigationActions.back())
+  }
+
   public async loadBalances(props: any) {
     try {
       const server = new StellarSdk.Server(props.screenProps.appState.connection.horizonServer, {allowHttp: true})
@@ -62,6 +67,7 @@ export class Balances extends React.Component<{ screenProps: {appState: any}, na
   render() {
     return (
       <BalancesPresentation
+        deleteWallet={this.deleteWallet.bind(this)}
         handlePassword={this.handlePassword.bind(this)}
         unlockWallet={this.unlockWallet.bind(this)}
         appState={this.props.screenProps.appState}
@@ -79,6 +85,7 @@ export class BalancesPresentation extends React.Component<{
   appState: AppState,
   handlePassword: Function,
   unlockWallet: Function,
+  deleteWallet: Function,
   password: string,
   privateKey: string,
   kinesisBalance: number,
@@ -113,6 +120,7 @@ export class BalancesPresentation extends React.Component<{
           <Text>Kinesis Balance: </Text>
           <Text>{this.props.kinesisBalance}</Text>
         </View>
+        <Button title='Delete wallet' onPress={() => this.props.deleteWallet()} />
       </View>
     )
   }
