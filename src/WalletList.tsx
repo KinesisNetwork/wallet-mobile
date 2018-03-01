@@ -5,7 +5,7 @@ import { BackNav } from './Navigation';
 import { Routes, Wallet, AppState } from './Routing'
 
 export class WalletList extends React.Component<{
-  screenProps: {appState: AppState, rootNavigation: any}, navigation: any
+  screenProps: {appState: AppState, rootNavigation: any, setActiveWalletId: any}, navigation: any
 }, {}> {
   static navigationOptions = (opt: any) => {
     return {
@@ -23,7 +23,8 @@ export class WalletList extends React.Component<{
           { _.map(this.props.screenProps.appState.walletList, (wallet: Wallet, index) => {
             return (
               <TouchableOpacity key={index} onPress={() => {
-                this.props.navigation.navigate(Routes.dashboardScreen, { walletIndex: index })
+                this.props.screenProps.setActiveWalletId(index)
+                this.props.navigation.navigate(Routes.dashboardScreen)
               }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 18, margin: 12, padding: 8}}>
                 <Text style={{color: 'white', fontSize: 16}} >{wallet.publicKey}</Text>
               </TouchableOpacity>

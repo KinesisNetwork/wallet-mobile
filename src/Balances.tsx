@@ -6,7 +6,7 @@ import { AppState } from './Routing'
 import { decryptPrivateKey } from './services/encryption';
 let StellarSdk = require('stellar-sdk')
 
-export class Balances extends React.Component<{ screenProps: {appState: any}}, any> {
+export class Balances extends React.Component<{ screenProps: {appState: any}, navigation?: any}, any> {
   static navigationOptions = (opt: any) => {
     return {
       header: <BackNav title='Wallet Dashboard' navigation={opt.navigation} />
@@ -94,7 +94,7 @@ export class BalancesPresentation extends React.Component<{
       <View style={{flex: 1, backgroundColor: 'white'}}>
         <Text>Public Key: </Text>
         <Text>{activeWallet.publicKey}</Text>
-        <Text>Reveal Private Key: </Text>
+        <Text>Reveal Private Key:</Text>
 
         {(this.props.privateKey) ? (
           <Text>{this.props.privateKey}</Text>

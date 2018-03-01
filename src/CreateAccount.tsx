@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-nat
 import { Header } from './Navigation';
 import { AppState, Routes } from './Routing';
 import { encryptPrivateKey } from './services/encryption';
+import { addNewWallet } from './services/wallet_persistance';
 let StellarBase = require('stellar-sdk')
 type AccountView = 'import' | 'generate'
 
@@ -60,12 +61,13 @@ export class CreateAccount extends React.Component<{screenProps: {
 
   private addNewWallet(accountKey: string, privateKey: string, password: string) {
     let encryptedPrivateKey = encryptPrivateKey(privateKey, password)
-    // return addNewWallet(accountKey, encryptedPrivateKey)
-    //   .then((walletList) => {
-    this.props.screenProps.setWalletList(this.props.screenProps.appState.walletList.concat({
-      publicKey: accountKey,
-      encryptedPrivateKey: encryptedPrivateKey
-    }))
+    return addNewWallet(accountKey, encryptedPrivateKey)
+      .then((walletList) => {
+        this.props.screenProps.setWalletList(this.props.screenProps.appState.walletList.concat({
+          publicKey: accountKey,
+          encryptedPrivateKey: encryptedPrivateKey
+        }))
+      })
 
     // this.props.screenProp.setWalletList(walletList)
     // this.props.navigation.navigate(Routes.walletList, {walletIndex: 0})

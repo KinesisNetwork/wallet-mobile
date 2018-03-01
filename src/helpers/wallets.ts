@@ -2,9 +2,9 @@ import { AppState, Wallet } from '../Routing'
 import * as _ from 'lodash'
 import { decryptPrivateKey } from '../services/encryption';
 
-export function getActiveWallet(appState: AppState, walletIndex?: number): Wallet {
+export function getActiveWallet(appState: AppState): Wallet {
   let walletList = appState.walletList
-  let walletId = _.get(appState, 'viewParams.walletIndex', 1)
+  let walletId = appState.activeWalletId
   return walletList[walletId]
 }
 

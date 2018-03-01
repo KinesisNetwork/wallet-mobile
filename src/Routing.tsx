@@ -6,13 +6,15 @@ import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
 import { defaultConnections, Connection,  Settings } from './Settings'
 import { Transfer } from './Transfer';
+import { retrieveWallets } from './services/wallet_persistance';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
 
 export interface AppState {
   walletList: Wallet[],
   passwordMap: PasswordMap,
-  connection: Connection
+  connection: Connection,
+  activeWalletId: number
 }
 
 export interface PasswordMap {
@@ -40,7 +42,6 @@ export const enum Routes {
   accountGenerate = 'Generate',
   accountImport = 'Import',
   selectNetwork = 'Select Network',
-  addNetwork = 'Add Network',
   dashboardBalances = 'Balances',
   dashboardTransfer = 'Transfer',
   dashboardTransactions = 'Transactions',
@@ -105,8 +106,7 @@ class CreateAccountWrapper extends React.Component<any, any> {
 
 let SettingsScreen = TabNavigator(
   {
-    [Routes.selectNetwork]: { screen: Settings },
-    [Routes.addNetwork]: { screen: Settings },
+    [Routes.selectNetwork]: { screen: Settings }
   },
   {
     navigationOptions: ({ navigation }: any) => ({
@@ -115,8 +115,6 @@ let SettingsScreen = TabNavigator(
         let iconName;
         if (routeName === Routes.selectNetwork) {
           iconName = `globe`;
-        } else if (routeName === Routes.addNetwork) {
-          iconName = `globe-alt`;
         }
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
@@ -212,6 +210,7 @@ class WalletScreenWrapper extends React.Component<any, any> {
   render() {
     return <WalletStack
         screenProps={{
+          setActiveWalletId: this.props.screenProps.setActiveWalletId,
           rootNavigation: this.props.navigation,
           appState: this.props.screenProps.appState
         }}
@@ -271,13 +270,23 @@ let RootStack = StackNavigator({
 export default class App extends React.Component<null, AppState> {
   constructor (props: any) {
     super(props)
-    this.state = {walletList: [], connection: defaultConnections[0], passwordMap: {}}
+    this.state = {walletList: [], connection: defaultConnections[0], passwordMap: {}, activeWalletId: 0}
   }
+
+  public componentDidMount() {
+    retrieveWallets()
+      .then((walletList: Wallet[]) => {
+        this.setWalletList(walletList)
+      })
+  }
+
   public changeConnection (connection: any) {
     this.setState({connection})
   }
+  public setActiveWalletId (activeWalletId: any) {
+    this.setState({activeWalletId})
+  }
   public setWalletList (walletList: Wallet[]): void {
-    console.warn(walletList, 'walletList')
     this.setState({walletList})
   }
   render() {
@@ -286,7 +295,8 @@ export default class App extends React.Component<null, AppState> {
         screenProps={{
           appState: this.state,
           changeConnection: this.changeConnection.bind(this),
-          setWalletList: this.setWalletList.bind(this)
+          setWalletList: this.setWalletList.bind(this),
+          setActiveWalletId: this.setActiveWalletId.bind(this)
         }}
       />
     </View>
