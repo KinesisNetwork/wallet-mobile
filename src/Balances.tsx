@@ -97,7 +97,7 @@ export class BalancesPresentation extends React.Component<{
         <Text>Reveal Private Key: </Text>
 
         {(this.props.privateKey) ? (
-          <Text>{this.props.privateKey || 'Please enter your wallet password'}</Text>
+          <Text>{this.props.privateKey}</Text>
         ) : (
           <View>
             <TextInput value={this.props.password} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} />

@@ -2,9 +2,10 @@ import * as React from 'react'
 import { Button, TextInput, Text, View } from 'react-native'
 import * as _ from 'lodash'
 import { AppState } from './Routing'
-import { getActiveWallet, getPrivateKey, getActivePrivateKey } from './helpers/wallets'
+import { getActiveWallet, getActivePrivateKey } from './helpers/wallets'
 import { isPaymentMultiSig } from './helpers/accounts';
 import { BackNav } from './Navigation';
+import { decryptPrivateKey } from './services/encryption';
 let StellarSdk = require('stellar-sdk')
 
 export interface Props {
@@ -18,6 +19,8 @@ export interface State {
   transferAmount: string
   memo: string
   loading: boolean
+  password: string
+  decryptedPrivateKey: string
 }
 
 export class Transfer extends React.Component<Props, State> {
@@ -28,11 +31,24 @@ export class Transfer extends React.Component<Props, State> {
   }
   constructor (props: any) {
     super(props)
-    this.state = {targetAddress: '', loading: false, memo: '', transferAmount: ''}
+    this.state = {targetAddress: '', loading: false, memo: '', transferAmount: '', password: '', decryptedPrivateKey: ''}
   }
 
   async componentDidMount() {
     StellarSdk.Network.use(new StellarSdk.Network(this.props.screenProps.appState.connection.networkPassphrase))
+  }
+
+  public async unlockWallet() {
+    let decryptedPrivateKey = decryptPrivateKey(getActiveWallet(this.props.screenProps.appState).encryptedPrivateKey, this.state.password)
+    if (decryptedPrivateKey) {
+      this.setState({decryptedPrivateKey})
+    } else {
+      console.warn('incorrect pass')
+    }
+  }
+
+  public handlePassword(password: any) {
+    this.setState({password})
   }
 
   public async transferKinesis (targetAddress: string, amount: string): Promise<any> {
@@ -101,7 +117,7 @@ export class Transfer extends React.Component<Props, State> {
       .addMemo(StellarSdk.Memo.text(this.state.memo))
       .build()
 
-      newAccountTransaction.sign(StellarSdk.Keypair.fromSecret(getPrivateKey(this.props.screenProps.appState, getActiveWallet(this.props.screenProps.appState))))
+      newAccountTransaction.sign(StellarSdk.Keypair.fromSecret(this.state.decryptedPrivateKey))
 
       if (needMoreSigners) {
         // return showMultiSigTransaction(newAccountTransaction)
@@ -132,7 +148,7 @@ export class Transfer extends React.Component<Props, State> {
         .addMemo(StellarSdk.Memo.text(this.state.memo))
         .build()
 
-      paymentTransaction.sign(StellarSdk.Keypair.fromSecret(getPrivateKey(this.props.screenProps.appState, getActiveWallet(this.props.screenProps.appState))))
+      paymentTransaction.sign(StellarSdk.Keypair.fromSecret(this.state.decryptedPrivateKey))
 
       if (needMoreSigners) {
         console.error('multisig not supported')
@@ -212,12 +228,16 @@ export class Transfer extends React.Component<Props, State> {
       <TransferPresentation
         appState={this.props.screenProps.appState}
         handleAddress={this.handleAddress.bind(this)}
+        handlePassword={this.handlePassword.bind(this)}
+        unlockWallet={this.unlockWallet.bind(this)}
         handleAmount={this.handleAmount.bind(this)}
         handleSubmit={this.handleSubmit.bind(this)}
         handleMemo={this.handleMemo.bind(this)}
         targetAddress={this.state.targetAddress}
         transferAmount={this.state.transferAmount}
         memo={this.state.memo}
+        password={this.state.password}
+        privateKey={this.state.decryptedPrivateKey}
         loading={this.state.loading}
       />
     )
@@ -227,10 +247,14 @@ export class Transfer extends React.Component<Props, State> {
 export class TransferPresentation extends React.Component<{
   appState: AppState,
   handleAddress: Function,
+  handlePassword: Function,
+  unlockWallet: Function,
   handleAmount: Function,
   handleSubmit: Function,
   handleMemo: Function,
   targetAddress: string,
+  password: string,
+  privateKey: string,
   transferAmount?: any,
   memo?: string,
   loading: boolean
@@ -249,13 +273,23 @@ export class TransferPresentation extends React.Component<{
             </View>
           ) : (
             <View>
-              <Text style={{color: 'white', marginBottom: 5}}>Target Account</Text>
-              <TextInput value={this.props.targetAddress} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text: string) => this.props.handleAddress(text)} />
-              <Text style={{color: 'white', marginBottom: 5}}>Amount</Text>
-              <TextInput value={this.props.transferAmount} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text: string) => this.props.handleAmount(text)} />
-              <Text style={{color: 'white', marginBottom: 5}}>Message (Optional)</Text>
-              <TextInput value={this.props.memo} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleMemo(text)} />
-              <Button title='Transfer' onPress={() => this.props.handleSubmit()} />
+              {(this.props.privateKey) ? (
+                <View>
+                  <Text style={{color: 'white', marginBottom: 5}}>Target Account</Text>
+                  <TextInput value={this.props.targetAddress} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text: string) => this.props.handleAddress(text)} />
+                  <Text style={{color: 'white', marginBottom: 5}}>Amount</Text>
+                  <TextInput value={this.props.transferAmount} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text: string) => this.props.handleAmount(text)} />
+                  <Text style={{color: 'white', marginBottom: 5}}>Message (Optional)</Text>
+                  <TextInput value={this.props.memo} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleMemo(text)} />
+                  <Button title='Transfer' onPress={() => this.props.handleSubmit()} />
+                </View>
+              ) : (
+                <View>
+                  <Text style={{color: 'white', marginBottom: 5}}>Password</Text>
+                  <TextInput value={this.props.password} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} />
+                  <Button title='Unlock' onPress={() => this.props.unlockWallet()} />
+                </View>
+              )}
             </View>
           )
         }
