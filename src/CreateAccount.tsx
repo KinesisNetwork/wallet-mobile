@@ -68,12 +68,6 @@ export class CreateAccount extends React.Component<{screenProps: {
           encryptedPrivateKey: encryptedPrivateKey
         }))
       })
-
-    // this.props.screenProp.setWalletList(walletList)
-    // this.props.navigation.navigate(Routes.walletList, {walletIndex: 0})
-      // }, (err: any) => {
-      //   console.error(err)
-      // })
   }
 
   public async verifyPassword(password: string, passwordVerify: string, accountType: 'generate' | 'import'): Promise<boolean> {
@@ -152,24 +146,24 @@ export class CreateAccountPresentation extends React.Component<{
     return (
         <ScrollView style={styles.mainContent}>
         {(this.props.accountView === 'generate') && (
-          <View style={{flex: 1}}>
-            <Text style={{color: 'white', marginBottom: 5}}>Wallet Password</Text>
-            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
-            <Text style={{color: 'white', marginBottom: 5}}>Repeat Wallet Password</Text>
-            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+          <View style={{flex: 1, paddingBottom: 60 }}>
+            <Text style={styles.labelFont}>Wallet Password</Text>
+            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+            <Text style={styles.labelFont}>Repeat Wallet Password</Text>
+            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
             <Button title='Create Account' onPress={() => this.props.generate()} />
           </View>
         )}
         {(this.props.accountView === 'import') && (
-          <View style={{flex: 1}}>
-            <Text style={{color: 'white', marginBottom: 5}}>Public Key</Text>
-            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePublic(text)} />
-            <Text style={{color: 'white', marginBottom: 5}}>Private Key</Text>
-            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePrivate(text)} />
-            <Text style={{color: 'white', marginBottom: 5}}>Wallet Password</Text>
-            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
-            <Text style={{color: 'white', marginBottom: 5}}>Repeat Wallet Password</Text>
-            <TextInput style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+          <View style={{flex: 1, paddingBottom: 60 }}>
+            <Text style={styles.labelFont}>Public Key</Text>
+            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePublic(text)} />
+            <Text style={styles.labelFont}>Private Key</Text>
+            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePrivate(text)} />
+            <Text style={styles.labelFont}>Wallet Password</Text>
+            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+            <Text style={styles.labelFont}>Repeat Wallet Password</Text>
+            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
             <Button title='Import keys' onPress={() => this.props.importKeys()} />
           </View>
         )}
@@ -182,6 +176,14 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     backgroundColor: '#1f2d3b',
-    padding: 15
+    padding: 15,
+  },
+  labelFont: {
+    color: '#d1edff',
+    marginBottom: 5
+  },
+  textInput: {
+    backgroundColor: '#d1edff',
+    marginBottom: 15
   },
 });

@@ -1,5 +1,6 @@
+import * as _ from 'lodash'
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native'
+import { TouchableOpacity, StyleSheet, Text, ScrollView, View } from 'react-native'
 import { BackNav } from './Navigation';
 
 export interface Connection {
@@ -80,25 +81,25 @@ export class SettingsPresentation extends React.Component<any, {}> {
 
   render() {
     return (
-      <View style={styles.mainContent}>
-        <View style={{marginTop: 35}}>
-            <Text>Select Network</Text>
-            {
-              this.props.defaultConnections.map((connection: Connection, index: number) => {
-                // let activeNetwork = connection === this.props.appState.connection
-                return (
-                  <View key={index} style={{marginTop: 5}}>
-                    <TouchableOpacity onPress={() => {this.props.changeConnection(connection)}} style={{width: '100%'}}>
-                      <Text>{connection.connectionName}</Text>
-                      <Text>{connection.horizonServer}</Text>
-                      <Text>{connection.networkPassphrase}</Text>
-                    </TouchableOpacity>
-                  </View>
-                )
-              })
-            }
-          </View>
-      </View>
+      <ScrollView style={styles.mainContent}>
+        {
+          this.props.defaultConnections.map((connection: Connection, index: number) => {
+            console.log(this.props.appState.connection)
+            let activeNetwork: boolean = connection === this.props.appState.connection
+            return (
+              <View key={index} style={{marginTop: 8, padding: 12, backgroundColor: activeNetwork ? '#3e5468' : '#2e4458'}}>
+                <TouchableOpacity onPress={() => {this.props.changeConnection(connection)}} style={{
+                  width: '100%',
+                }}>
+                  <Text style={[styles.labelFont, {fontWeight: 'bold', fontSize: 15, color: 'white'}]}>{_.toUpper(connection.connectionName)}</Text>
+                  <Text style={[styles.labelFont, {marginBottom: -2}]}>{connection.horizonServer}</Text>
+                  <Text style={styles.labelFont}>{connection.networkPassphrase}</Text>
+                </TouchableOpacity>
+              </View>
+            )
+          })
+        }
+      </ScrollView>
     )
   }
 }
@@ -107,5 +108,15 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     backgroundColor: '#1f2d3b',
+    padding: 15
+  },
+  labelFont: {
+    color: '#d1edff',
+    marginBottom: 5
+  },
+  textInput: {
+    backgroundColor: 'white',
+    marginBottom: 15
   },
 });
+

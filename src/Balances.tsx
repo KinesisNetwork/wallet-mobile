@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, TextInput, Text, View } from 'react-native'
+import { StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { AppState } from './Routing'
@@ -98,27 +98,27 @@ export class BalancesPresentation extends React.Component<{
   render() {
     let activeWallet = getActiveWallet(this.props.appState) || {}
     return (
-      <View style={{flex: 1, backgroundColor: 'white'}}>
-        <Text>Public Key: </Text>
-        <Text>{activeWallet.publicKey}</Text>
-        <Text>Reveal Private Key:</Text>
+      <View style={styles.mainContent}>
+        <Text style={styles.labelFont}>Public Key: </Text>
+        <Text style={styles.labelFont}>{activeWallet.publicKey}</Text>
+        <Text style={styles.labelFont}>Reveal Private Key:</Text>
 
         {(this.props.privateKey) ? (
-          <Text>{this.props.privateKey}</Text>
+          <Text style={styles.labelFont}>{this.props.privateKey}</Text>
         ) : (
           <View>
-            <TextInput value={this.props.password} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} />
+            <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} />
             <Button title='Unlock' onPress={() => this.props.unlockWallet()} />
           </View>
         )}
 
         <View>
-          <Text>Account activated: </Text>
-          <Text>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
+          <Text style={styles.labelFont}>Account activated: </Text>
+          <Text style={styles.labelFont}>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
         </View>
         <View>
-          <Text>Kinesis Balance: </Text>
-          <Text>{this.props.kinesisBalance}</Text>
+          <Text style={styles.labelFont}>Kinesis Balance: </Text>
+          <Text style={styles.labelFont}>{this.props.kinesisBalance}</Text>
         </View>
         <Button title='Delete wallet' onPress={() => this.props.deleteWallet()} />
       </View>
@@ -126,3 +126,18 @@ export class BalancesPresentation extends React.Component<{
   }
 }
 
+const styles = StyleSheet.create({
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#1f2d3b',
+    padding: 15
+  },
+  labelFont: {
+    color: 'white',
+    marginBottom: 5
+  },
+  textInput: {
+    backgroundColor: 'white',
+    marginBottom: 15
+  },
+});
