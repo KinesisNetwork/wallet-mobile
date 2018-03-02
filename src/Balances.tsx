@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, Button, TextInput, Text, View } from 'react-native'
+import { TouchableOpacity, ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { AppState } from './Routing'
 import { decryptPrivateKey } from './services/encryption';
 let { NavigationActions } = require('react-navigation')
 let StellarSdk = require('stellar-sdk')
+let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 
 export class Balances extends React.Component<{ screenProps: {appState: any}, navigation?: any}, any> {
   static navigationOptions = (opt: any) => {
@@ -98,30 +99,37 @@ export class BalancesPresentation extends React.Component<{
   render() {
     let activeWallet = getActiveWallet(this.props.appState) || {}
     return (
-      <View style={styles.mainContent}>
-        <Text style={styles.labelFont}>Public Key: </Text>
-        <Text style={styles.labelFont}>{activeWallet.publicKey}</Text>
-        <Text style={styles.labelFont}>Reveal Private Key:</Text>
+      <ScrollView style={styles.mainContent}>
+        <View style={{paddingBottom: 60}}>
+          <Text style={[styles.labelFont, styles.labelHeader]}>Public Key: </Text>
+          <Text style={styles.labelFont}>{activeWallet.publicKey}</Text>
+          <Text style={[styles.labelFont, styles.labelHeader]}>Reveal Private Key:</Text>
 
-        {(this.props.privateKey) ? (
-          <Text style={styles.labelFont}>{this.props.privateKey}</Text>
-        ) : (
+          {(this.props.privateKey) ? (
+            <Text style={styles.labelFont}>{this.props.privateKey}</Text>
+          ) : (
+            <View style={{flexDirection: 'row'}}>
+              <TextInput placeholder='Password' value={this.props.password} style={[styles.textInput, {flex: 4}]} onChangeText={(text) => this.props.handlePassword(text)} />
+              <TouchableOpacity style={{flex:1, backgroundColor: 'yellow', marginBottom: 15, alignItems: 'center', justifyContent: 'center'}} onPress={() => this.props.unlockWallet()}>
+                <IoniconsIcon style={{margin: 8}} name='ios-arrow-forward-outline' size={21} color='black' />
+              </TouchableOpacity>
+            </View>
+          )}
+
           <View>
-            <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} />
-            <Button title='Unlock' onPress={() => this.props.unlockWallet()} />
+            <Text style={[styles.labelFont, styles.labelHeader]}>Account activated: </Text>
+            <Text style={styles.labelFont}>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
           </View>
-        )}
+          <View>
+            <Text style={[styles.labelFont, styles.labelHeader]}>Kinesis Balance: </Text>
+            <Text style={styles.labelFont}>{this.props.kinesisBalance}</Text>
+          </View>
+          <View style={{display: 'none'}}>
+            <Button title='Delete wallet' onPress={() => this.props.deleteWallet()} />
+          </View>
 
-        <View>
-          <Text style={styles.labelFont}>Account activated: </Text>
-          <Text style={styles.labelFont}>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
         </View>
-        <View>
-          <Text style={styles.labelFont}>Kinesis Balance: </Text>
-          <Text style={styles.labelFont}>{this.props.kinesisBalance}</Text>
-        </View>
-        <Button title='Delete wallet' onPress={() => this.props.deleteWallet()} />
-      </View>
+      </ScrollView>
     )
   }
 }
@@ -130,14 +138,20 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     backgroundColor: '#1f2d3b',
-    padding: 15
+    padding: 15,
   },
   labelFont: {
-    color: 'white',
+    color: '#d1edff',
     marginBottom: 5
   },
-  textInput: {
-    backgroundColor: 'white',
-    marginBottom: 15
+  labelHeader: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop: 10
   },
+  textInput: {
+    backgroundColor: '#d1edff',
+    marginBottom: 15
+  }
 });

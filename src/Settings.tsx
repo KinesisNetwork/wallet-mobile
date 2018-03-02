@@ -2,6 +2,7 @@ import * as _ from 'lodash'
 import React from 'react';
 import { TouchableOpacity, StyleSheet, Text, ScrollView, View } from 'react-native'
 import { BackNav } from './Navigation';
+let FeatherIcon = require('react-native-vector-icons/Feather').default;
 
 export interface Connection {
   horizonServer: string,
@@ -87,9 +88,12 @@ export class SettingsPresentation extends React.Component<any, {}> {
             console.log(this.props.appState.connection)
             let activeNetwork: boolean = connection === this.props.appState.connection
             return (
-              <View key={index} style={{marginTop: 8, padding: 12, backgroundColor: activeNetwork ? '#3e5468' : '#2e4458'}}>
+              <View key={index} style={{marginTop: 8, padding: 12, backgroundColor: activeNetwork ? '#3e5468' : '#2e4458', flexDirection: 'row', justifyContent: 'center'}}>
+                <View style={{marginRight: 10, alignContent: 'center', justifyContent: 'center'}}>
+                  <FeatherIcon style={{margin: 8}} name={activeNetwork ? 'check-circle' : 'circle' } size={21} color='#d1edff' />
+                </View>
                 <TouchableOpacity onPress={() => {this.props.changeConnection(connection)}} style={{
-                  width: '100%',
+                  flex: 1,
                 }}>
                   <Text style={[styles.labelFont, {fontWeight: 'bold', fontSize: 15, color: 'white'}]}>{_.toUpper(connection.connectionName)}</Text>
                   <Text style={[styles.labelFont, {marginBottom: -2}]}>{connection.horizonServer}</Text>
