@@ -24,7 +24,7 @@ interface DispatchProps {
 
 const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({
   setActiveWalletIndex: async (index: number) => {
-    dispatch(OptionActionCreators.changeConnection.create(index))
+    dispatch(OptionActionCreators.setActiveWalletIndex.create(index))
   }
 })
 
