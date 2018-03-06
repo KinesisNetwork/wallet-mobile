@@ -1,5 +1,19 @@
 import { Action, ActionCreators } from './action'
-import { defaultConnections, AppState } from './index'
+import { AppState, Connection } from './index'
+
+const defaultConnections: Connection[] = [{
+  horizonServer: 'https://stellar-local.abx.com',
+  networkPassphrase: 'Test SDF Network ; September 2015',
+  connectionName: 'Local Development Network'
+}, {
+  horizonServer: 'https://kinesis-test-net.abx.com',
+  networkPassphrase: 'Kinesis Test Network ; February 2018',
+  connectionName: 'Kinesis Test Network'
+}, {
+  horizonServer: 'https://horizon-testnet.stellar.org/',
+  networkPassphrase: 'Test SDF Network ; September 2015',
+  connectionName: 'Stellar Test Network'
+}]
 
 const defaultState: AppState = {
   walletList: [],
