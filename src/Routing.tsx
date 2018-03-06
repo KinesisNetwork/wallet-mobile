@@ -1,38 +1,16 @@
+import { Provider } from 'react-redux'
 import React from 'react'
 import { View } from 'react-native'
+import store from './store'
 import { GenerateAccount, ImportAccount } from './CreateAccount'
 import { Balances } from './Balances'
 import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
-import { defaultConnections, Connection,  Settings } from './Settings'
+import { Settings } from './Settings'
 import { Transfer } from './Transfer';
 import { retrieveWallets } from './services/wallet_persistance';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
-
-export interface AppState {
-  walletList: Wallet[],
-  passwordMap: PasswordMap,
-  connection: Connection,
-  activeWalletId: number
-}
-
-export interface PasswordMap {
-  [accountId: string]: {
-    timestamp: number,
-    password: string
-  }
-}
-
-export interface ViewParams {
-  walletIndex?: number
-}
-
-export interface Wallet {
-  publicKey: string,
-  encryptedPrivateKey: string,
-  accountName?: string
-}
 
 export const enum Routes {
   accountScreen = 'Account Screen',
@@ -267,39 +245,26 @@ let RootStack = StackNavigator({
   }
 );
 
-export default class App extends React.Component<null, AppState> {
+export default class App extends React.Component<null, null> {
   constructor (props: any) {
     super(props)
-    this.state = {walletList: [], connection: defaultConnections[0], passwordMap: {}, activeWalletId: 0}
   }
 
   public componentDidMount() {
-    retrieveWallets()
-      .then((walletList: Wallet[]) => {
-        this.setWalletList(walletList)
-      })
+    // retrieveWallets()
+    //   .then((walletList: Wallet[]) => {
+    //     // this.setWalletList(walletList)
+    //   })
   }
 
-  public changeConnection (connection: any) {
-    this.setState({connection})
-  }
-  public setActiveWalletId (activeWalletId: any) {
-    this.setState({activeWalletId})
-  }
-  public setWalletList (walletList: Wallet[]): void {
-    this.setState({walletList})
-  }
   render() {
-    return <View style={{flex: 1, backgroundColor: '#000'}}>
-      <RootStack
-        screenProps={{
-          appState: this.state,
-          changeConnection: this.changeConnection.bind(this),
-          setWalletList: this.setWalletList.bind(this),
-          setActiveWalletId: this.setActiveWalletId.bind(this)
-        }}
-      />
-    </View>
+    return (
+      <Provider store={store}>
+        <View style={{flex: 1, backgroundColor: '#000'}}>
+          <RootStack />
+        </View>
+      </Provider>
+    )
   }
 }
 
