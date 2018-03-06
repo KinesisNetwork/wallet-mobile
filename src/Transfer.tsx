@@ -1,18 +1,29 @@
 import * as React from 'react'
 import { Button, TextInput, Text, View } from 'react-native'
 import * as _ from 'lodash'
-import { AppState } from './Routing'
 import { getActiveWallet, getActivePrivateKey } from './helpers/wallets'
 import { isPaymentMultiSig } from './helpers/accounts';
 import { BackNav } from './Navigation';
 import { decryptPrivateKey } from './services/encryption';
 let StellarSdk = require('stellar-sdk')
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+import { AppState } from './store/options/index'
 
-export interface Props {
-  screenProps: {
-    appState: AppState
-  }
+interface StateProps {
+  appState: AppState,
+  navigation: any
 }
+
+const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, ownProps: any) => ({
+  appState: options,
+  ...ownProps
+})
+
+interface DispatchProps { }
+
+const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({})
+
+type TransferProps = StateProps & DispatchProps
 
 export interface State {
   targetAddress: string
@@ -23,7 +34,7 @@ export interface State {
   decryptedPrivateKey: string
 }
 
-export class Transfer extends React.Component<Props, State> {
+export class TransferState extends React.Component<TransferProps, State> {
   static navigationOptions = (opt: any) => {
     return {
       header: <BackNav title='Wallet Dashboard' navigation={opt.navigation} />
@@ -35,11 +46,11 @@ export class Transfer extends React.Component<Props, State> {
   }
 
   async componentDidMount() {
-    StellarSdk.Network.use(new StellarSdk.Network(this.props.screenProps.appState.connection.networkPassphrase))
+    StellarSdk.Network.use(new StellarSdk.Network(this.props.appState.connection.networkPassphrase))
   }
 
   public async unlockWallet() {
-    let decryptedPrivateKey = decryptPrivateKey(getActiveWallet(this.props.screenProps.appState).encryptedPrivateKey, this.state.password)
+    let decryptedPrivateKey = decryptPrivateKey(getActiveWallet(this.props.appState).encryptedPrivateKey, this.state.password)
     if (decryptedPrivateKey) {
       this.setState({decryptedPrivateKey})
     } else {
@@ -52,7 +63,7 @@ export class Transfer extends React.Component<Props, State> {
   }
 
   public async transferKinesis (targetAddress: string, amount: string): Promise<any> {
-    const server = new StellarSdk.Server(this.props.screenProps.appState.connection.horizonServer, {allowHttp: true})
+    const server = new StellarSdk.Server(this.props.appState.connection.horizonServer, {allowHttp: true})
     // Get the most recent ledger to determine the correct baseFee
     const mostRecentLedger = await server.ledgers().order('desc').call()
     const currentBaseFeeInStroops = mostRecentLedger.records[0].base_fee_in_stroops
@@ -71,7 +82,7 @@ export class Transfer extends React.Component<Props, State> {
     let account
 
     try {
-      account = await server.loadAccount(getActiveWallet(this.props.screenProps.appState).publicKey)
+      account = await server.loadAccount(getActiveWallet(this.props.appState).publicKey)
     } catch (e) {
       // return swal('Oops!', 'Your account does not have any funds to send money with', 'error')
       return false
@@ -79,7 +90,7 @@ export class Transfer extends React.Component<Props, State> {
 
     const needMoreSigners = isPaymentMultiSig(account)
 
-    const sequencedAccount = new StellarSdk.Account(getActiveWallet(this.props.screenProps.appState).publicKey, account.sequence)
+    const sequencedAccount = new StellarSdk.Account(getActiveWallet(this.props.appState).publicKey, account.sequence)
 
     try {
       // We attempt to look up the target account. If this throws an error, we create
@@ -195,7 +206,7 @@ export class Transfer extends React.Component<Props, State> {
       return this.focusElement('transfer-amount')
     }
 
-    let privateKey = getActivePrivateKey(this.props.screenProps.appState)
+    let privateKey = getActivePrivateKey(this.props.appState)
     if (!privateKey) {
       // await swal('Oops!', 'Please unlock your account to transfer funds', 'error')
       return this.focusElement('wallet-password')
@@ -226,7 +237,7 @@ export class Transfer extends React.Component<Props, State> {
   render() {
     return (
       <TransferPresentation
-        appState={this.props.screenProps.appState}
+        appState={this.props.appState}
         handleAddress={this.handleAddress.bind(this)}
         handlePassword={this.handlePassword.bind(this)}
         unlockWallet={this.unlockWallet.bind(this)}
@@ -297,3 +308,5 @@ export class TransferPresentation extends React.Component<{
     )
   }
 }
+
+export const Transfer = connect(mapStateToProps, mapDispatchToProps)(TransferState)

@@ -1,8 +1,7 @@
-import * as _ from 'lodash'
 import { Action, ActionCreators } from './action'
 import { defaultConnections, AppState } from './index'
 
-const defaultState: OptionState = {
+const defaultState: AppState = {
   walletList: [],
   activeWalletIndex: 0,
   passwordMap: {},
@@ -10,12 +9,14 @@ const defaultState: OptionState = {
   allConnections: defaultConnections
 }
 
-export function options (state: OptionState = defaultState, action: Action): OptionState {
+export function options (state: AppState = defaultState, action: Action): AppState {
   switch (action.type) {
     case ActionCreators.changeConnection.type:
-      return { ...state, action.payload.connection }
+      return { ...state, connection: action.payload }
     case ActionCreators.setWalletList.type:
-      return { ...state, action.payload.walletList }
+      return { ...state, walletList: action.payload }
+    case ActionCreators.setActiveWalletIndex.type:
+      return { ...state, activeWalletIndex: action.payload }
     default:
       return state
   }

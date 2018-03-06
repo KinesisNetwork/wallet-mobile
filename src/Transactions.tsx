@@ -2,9 +2,27 @@ import React from 'react';
 import { Text, View, ScrollView } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
-import { AppState } from './Routing'
 let StellarSdk: any = require('stellar-sdk')
 import * as _ from 'lodash'
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+import { AppState } from './store/options/index'
+
+interface StateProps {
+  appState: AppState,
+  navigation: any
+}
+
+const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, ownProps: any) => ({
+  appState: options,
+  ...ownProps
+})
+
+interface DispatchProps {
+}
+
+const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({})
+
+type TransactionsProps = StateProps & DispatchProps
 
 export interface HumanTransactions {
   txId: string
@@ -38,7 +56,7 @@ export interface IState {
 }
 
 const defaultState = { transactions: [], lastPage: false, currentPage: undefined, recentlyLoaded: false }
-export class Transactions extends React.Component<{screenProps: {appState: AppState}}, IState> {
+export class TransactionsState extends React.Component<TransactionsProps, IState> {
   static navigationOptions = (opt: any) => {
     return {
       header: <BackNav title='Wallet Transactions' navigation={opt.navigation} />
@@ -70,9 +88,9 @@ export class Transactions extends React.Component<{screenProps: {appState: AppSt
     this.setState(_.cloneDeep(defaultState), () => {this.transactionPage()})
   }
 
-  public async componentWillReceiveProps(nextProps: {screenProps: {appState: AppState}}) {
-    let currentWalletIndex = _.get(nextProps, 'screenProps.appState.viewParams.walletIndex', null)
-    let newWalletIndex = _.get(this.props, 'screenProps.appState.viewParams.walletIndex', null)
+  public async componentWillReceiveProps(nextProps: TransactionsProps) {
+    let currentWalletIndex = _.get(nextProps, 'appState.activeWalletIndex', null)
+    let newWalletIndex = _.get(this.props, 'appState.activeWalletIndex', null)
     if (currentWalletIndex !== newWalletIndex && newWalletIndex !== null) {
       this.setState(_.cloneDeep(defaultState), () => {this.transactionPage()})
     }
@@ -80,13 +98,13 @@ export class Transactions extends React.Component<{screenProps: {appState: AppSt
 
   // TODO: Hook this up to a next page button that is hidden if lastPage === true
   async transactionPage (): Promise<void> {
-    StellarSdk.Network.use(new StellarSdk.Network(this.props.screenProps.appState.connection.networkPassphrase))
-    const server = new StellarSdk.Server(this.props.screenProps.appState.connection.horizonServer, {allowHttp: true})
+    StellarSdk.Network.use(new StellarSdk.Network(this.props.appState.connection.networkPassphrase))
+    const server = new StellarSdk.Server(this.props.appState.connection.horizonServer, {allowHttp: true})
 
     // Load 2 pages of records at a time, initializing if we do not yet have transactions
     const currentPage = this.state.currentPage
       ? this.state.currentPage
-      : await server.transactions().forAccount(getActiveWallet(this.props.screenProps.appState).publicKey).order('desc').call()
+      : await server.transactions().forAccount(getActiveWallet(this.props.appState).publicKey).order('desc').call()
 
     const nextPage = await currentPage.next()
 
@@ -192,3 +210,5 @@ export class Transactions extends React.Component<{screenProps: {appState: AppSt
     )
   }
 }
+
+export const Transactions = connect(mapStateToProps, mapDispatchToProps)(TransactionsState)

@@ -1,5 +1,5 @@
 import { createStore, combineReducers } from 'redux'
-import { OptionState, options } from './options/'
+import { AppState as OptionState, options } from './options/'
 
 export interface AppState {
   options: OptionState

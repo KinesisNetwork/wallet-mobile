@@ -1,13 +1,39 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { Header } from './Navigation';
-import { AppState, Routes } from './Routing';
 import { encryptPrivateKey } from './services/encryption';
 import { addNewWallet } from './services/wallet_persistance';
 let StellarBase = require('stellar-sdk')
 type AccountView = 'import' | 'generate'
+import { Wallet } from './store/options/index';
+import { retrieveWallets } from './services/wallet_persistance';
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+import { OptionActionCreators } from './store/root-actions'
+import { AppState } from './store/options/index'
 
-export class GenerateAccount extends React.Component<any, any> {
+interface StateProps {
+  appState: AppState,
+  navigation: any
+}
+
+const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, ownProps: any) => ({
+  appState: options,
+  ...ownProps
+})
+
+interface DispatchProps {
+  setWalletList: Function,
+}
+
+const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({
+  setWalletList: async (walletList: Wallet[]) => {
+    dispatch(OptionActionCreators.setWalletList.create(walletList))
+  }
+})
+
+type AccountProps = StateProps & DispatchProps
+
+export class GenerateAccountWrapper extends React.Component<AccountProps, any> {
   static navigationOptions = (opt: any) => {
     return {
       header: <Header navigation={opt.navigation} />
@@ -21,7 +47,7 @@ export class GenerateAccount extends React.Component<any, any> {
   }
 }
 
-export class ImportAccount extends React.Component<any, any> {
+export class ImportAccountWrapper extends React.Component<AccountProps, any> {
   static navigationOptions = (opt: any) => {
     return {
       header: <Header navigation={opt.navigation} />
@@ -35,11 +61,10 @@ export class ImportAccount extends React.Component<any, any> {
   }
 }
 
-export class CreateAccount extends React.Component<{screenProps: {
-  setWalletList: Function, setAccountKeys: Function, appState: AppState
-}, navigation: any, accountView: AccountView}, {
-  privateKey: string, publicKey: string, password: string, passwordVerify: string
-}> {
+export class CreateAccount extends React.Component<
+  { setWalletList: Function, appState: AppState, navigation: any, accountView: AccountView },
+  { privateKey: string, publicKey: string, password: string, passwordVerify: string }>
+{
   constructor (props: any) {
     super(props)
     this.state = {
@@ -48,6 +73,11 @@ export class CreateAccount extends React.Component<{screenProps: {
       password: '',
       passwordVerify: ''
     }
+  }
+
+  public componentDidMount() {
+     retrieveWallets()
+      .then((wallets: Wallet[]) => this.props.setWalletList(wallets))
   }
 
   public async generate() {
@@ -63,7 +93,7 @@ export class CreateAccount extends React.Component<{screenProps: {
     let encryptedPrivateKey = encryptPrivateKey(privateKey, password)
     return addNewWallet(accountKey, encryptedPrivateKey)
       .then((walletList) => {
-        this.props.screenProps.setWalletList(this.props.screenProps.appState.walletList.concat({
+        this.props.setWalletList(this.props.appState.walletList.concat({
           publicKey: accountKey,
           encryptedPrivateKey: encryptedPrivateKey
         }))
@@ -116,7 +146,7 @@ export class CreateAccount extends React.Component<{screenProps: {
     return (
       <CreateAccountPresentation
         accountView={this.props.accountView}
-        appState={this.props.screenProps.appState}
+        appState={this.props.appState}
         importKeys={this.importKeys.bind(this)}
         generate={this.generate.bind(this)}
         handlePublic={this.handlePublic.bind(this)}
@@ -187,3 +217,6 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
 });
+
+export const ImportAccount = connect(mapStateToProps, mapDispatchToProps)(ImportAccountWrapper)
+export const GenerateAccount = connect(mapStateToProps, mapDispatchToProps)(GenerateAccountWrapper)

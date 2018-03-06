@@ -8,7 +8,6 @@ import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
 import { Settings } from './Settings'
 import { Transfer } from './Transfer';
-import { retrieveWallets } from './services/wallet_persistance';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
 
@@ -68,20 +67,6 @@ let CreateAccount = TabNavigator(
   }
 );
 
-class CreateAccountWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = GenerateAccount.navigationOptions;
-  // Pass props to children
-  render() {
-    return <CreateAccount
-      screenProps={{
-          appState: this.props.screenProps.appState,
-          setWalletList: this.props.screenProps.setWalletList
-      }}
-      />
-  }
-}
-
 let SettingsScreen = TabNavigator(
   {
     [Routes.selectNetwork]: { screen: Settings }
@@ -120,20 +105,6 @@ let SettingsScreen = TabNavigator(
     swipeEnabled: false,
   }
 );
-
-class SettingsScreenWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = Settings.navigationOptions;
-  // Pass props to children
-  render() {
-    return <SettingsScreen
-      screenProps={{
-          appState: this.props.screenProps.appState,
-          changeConnection: this.props.screenProps.changeConnection
-      }}
-      />
-  }
-}
 
 let DashboardScreen = TabNavigator(
   {
@@ -181,40 +152,12 @@ let DashboardScreen = TabNavigator(
   }
 );
 
-class WalletScreenWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = WalletList.navigationOptions;
-  // Pass props to children
-  render() {
-    return <WalletStack
-        screenProps={{
-          setActiveWalletId: this.props.screenProps.setActiveWalletId,
-          rootNavigation: this.props.navigation,
-          appState: this.props.screenProps.appState
-        }}
-      />
-  }
-}
-
-class DashboardScreenWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = Balances.navigationOptions;
-  // Pass props to children
-  render() {
-    return <DashboardScreen
-        screenProps={{
-          appState: this.props.screenProps.appState
-        }}
-      />
-  }
-}
-
 let WalletStack = StackNavigator({
     [Routes.walletList]: {
       screen: WalletList
     },
     [Routes.dashboardScreen]: {
-      screen: DashboardScreenWrapper
+      screen: DashboardScreen
     },
   },{
     initialRouteName: Routes.walletList,
@@ -228,13 +171,13 @@ let WalletStack = StackNavigator({
 
 let RootStack = StackNavigator({
     [Routes.settingsScreen]: {
-      screen: SettingsScreenWrapper
+      screen: SettingsScreen
     },
     [Routes.walletScreen]: {
-      screen: WalletScreenWrapper
+      screen: WalletStack
     },
     [Routes.accountScreen]: {
-      screen: CreateAccountWrapper
+      screen: CreateAccount
     },
   },{
     initialRouteName: Routes.accountScreen,
