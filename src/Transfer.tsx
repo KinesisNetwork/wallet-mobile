@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Button, TextInput, Text, View } from 'react-native'
+import { TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import * as _ from 'lodash'
 import { AppState } from './Routing'
 import { getActiveWallet, getActivePrivateKey } from './helpers/wallets'
@@ -26,7 +26,7 @@ export interface State {
 export class Transfer extends React.Component<Props, State> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <BackNav title='Wallet Dashboard' navigation={opt.navigation} />
+      header: <BackNav title='Wallet Transfer' navigation={opt.navigation} />
     }
   }
   constructor (props: any) {
@@ -265,35 +265,65 @@ export class TransferPresentation extends React.Component<{
 
   render() {
     return (
-      <View>
+      <ScrollView style={styles.mainContent}>
         {
           this.props.loading ? (
             <View>
-              <Text>Loading</Text>
+              <Text style={styles.labelFont}>Loading</Text>
             </View>
           ) : (
             <View>
               {(this.props.privateKey) ? (
                 <View>
-                  <Text style={{color: 'white', marginBottom: 5}}>Target Account</Text>
-                  <TextInput value={this.props.targetAddress} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text: string) => this.props.handleAddress(text)} />
-                  <Text style={{color: 'white', marginBottom: 5}}>Amount</Text>
-                  <TextInput value={this.props.transferAmount} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text: string) => this.props.handleAmount(text)} />
-                  <Text style={{color: 'white', marginBottom: 5}}>Message (Optional)</Text>
-                  <TextInput value={this.props.memo} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handleMemo(text)} />
-                  <Button title='Transfer' onPress={() => this.props.handleSubmit()} />
+                  <Text style={styles.labelFont}>Target Account</Text>
+                  <TextInput value={this.props.targetAddress} style={styles.textInput} onChangeText={(text: string) => this.props.handleAddress(text)} />
+                  <Text style={styles.labelFont}>Amount</Text>
+                  <TextInput value={this.props.transferAmount} style={styles.textInput} onChangeText={(text: string) => this.props.handleAmount(text)} />
+                  <Text style={styles.labelFont}>Message (Optional)</Text>
+                  <TextInput value={this.props.memo} style={styles.textInput} onChangeText={(text) => this.props.handleMemo(text)} />
+                  <TouchableOpacity onPress={() => this.props.handleSubmit()} style={{
+                    flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
+                  }}>
+                    <Text style={{color: 'yellow'}}>Transfer</Text>
+                  </TouchableOpacity>
                 </View>
               ) : (
                 <View>
-                  <Text style={{color: 'white', marginBottom: 5}}>Password</Text>
-                  <TextInput value={this.props.password} style={{backgroundColor: 'white', marginBottom: 15}} onChangeText={(text) => this.props.handlePassword(text)} />
-                  <Button title='Unlock' onPress={() => this.props.unlockWallet()} />
+                  <Text style={styles.labelFont}>Password</Text>
+                  <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} />
+                  <TouchableOpacity onPress={() => this.props.unlockWallet()} style={{
+                    flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
+                  }}>
+                    <Text style={{color: 'yellow'}}>Unlock</Text>
+                  </TouchableOpacity>
                 </View>
               )}
             </View>
           )
         }
-      </View>
+      </ScrollView>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#1f2d3b',
+    padding: 15,
+  },
+  labelFont: {
+    color: '#d1edff',
+    marginBottom: 5
+  },
+  labelHeader: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop: 10
+  },
+  textInput: {
+    backgroundColor: '#d1edff',
+    marginBottom: 15
+  }
+});

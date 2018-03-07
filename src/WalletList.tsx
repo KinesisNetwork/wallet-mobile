@@ -20,13 +20,13 @@ export class WalletList extends React.Component<{
   render() {
     return (
       <View style={styles.drawerContent}>
-        <ScrollView style={{flex: 1, paddingTop: 5}}>
+        <ScrollView style={{flex: 1}}>
           { _.map(this.props.screenProps.appState.walletList, (wallet: Wallet, index) => {
             return (
               <TouchableOpacity key={index} onPress={() => {
                 this.props.screenProps.setActiveWalletId(index)
                 this.props.navigation.navigate(Routes.dashboardScreen)
-              }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 8, marginHorizontal: 12, marginBottom: 0, padding: 8}}>
+              }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 0, marginBottom: 4, padding: 12}}>
                 <View style={{flex: 1}}>
                   <Text style={{color: 'white', fontSize: 14}} >{wallet.publicKey}</Text>
                 </View>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
+import { TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import { Header } from './Navigation';
 import { AppState, Routes } from './Routing';
 import { encryptPrivateKey } from './services/encryption';
@@ -151,7 +151,11 @@ export class CreateAccountPresentation extends React.Component<{
             <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
             <Text style={styles.labelFont}>Repeat Wallet Password</Text>
             <TextInput style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
-            <Button title='Create Account' onPress={() => this.props.generate()} />
+            <TouchableOpacity onPress={() => this.props.generate()} style={{
+              flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
+            }}>
+              <Text style={{color: 'yellow'}}>Create Account</Text>
+            </TouchableOpacity>
           </View>
         )}
         {(this.props.accountView === 'import') && (
@@ -164,7 +168,11 @@ export class CreateAccountPresentation extends React.Component<{
             <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
             <Text style={styles.labelFont}>Repeat Wallet Password</Text>
             <TextInput style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
-            <Button title='Import keys' onPress={() => this.props.importKeys()} />
+            <TouchableOpacity onPress={() => this.props.importKeys()} style={{
+              flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
+            }}>
+              <Text style={{color: 'yellow'}}>Import Keys</Text>
+            </TouchableOpacity>
           </View>
         )}
         </ScrollView>

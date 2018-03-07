@@ -88,7 +88,7 @@ export class SettingsPresentation extends React.Component<any, {}> {
             console.log(this.props.appState.connection)
             let activeNetwork: boolean = connection === this.props.appState.connection
             return (
-              <View key={index} style={{marginTop: 8, padding: 12, backgroundColor: activeNetwork ? '#3e5468' : '#2e4458', flexDirection: 'row', justifyContent: 'center'}}>
+              <View key={index} style={{marginTop: 4, padding: 12, backgroundColor: activeNetwork ? '#3e5468' : '#2e4458', flexDirection: 'row', justifyContent: 'center'}}>
                 <View style={{marginRight: 10, alignContent: 'center', justifyContent: 'center'}}>
                   <FeatherIcon style={{margin: 8}} name={activeNetwork ? 'check-circle' : 'circle' } size={21} color='#d1edff' />
                 </View>
@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
   mainContent: {
     flex: 1,
     backgroundColor: '#1f2d3b',
-    padding: 15
   },
   labelFont: {
     color: '#d1edff',

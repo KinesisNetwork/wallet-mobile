@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { AppState } from './Routing'
@@ -118,31 +118,31 @@ export class Transactions extends React.Component<{screenProps: {appState: AppSt
       return (
         <View key={i}>
           <View>
-            <Text>{t.txType}</Text>
+            <Text style={[styles.labelFont, styles.labelHeader]}>{t.txType}</Text>
           </View>
           <View>
             <View>
-              <Text>Tx Id</Text>
-              <Text>{t.txId}</Text>
+              <Text style={[styles.labelFont, styles.labelHeader]}>Tx Id</Text>
+              <Text style={styles.labelFont}>{t.txId}</Text>
             </View>
             <View>
-              <Text>Message</Text>
-              <Text>{t.memo}</Text>
+              <Text style={[styles.labelFont, styles.labelHeader]}>Message</Text>
+              <Text style={styles.labelFont}>{t.memo}</Text>
             </View>
             <View>
-              <Text>Date</Text>
-              <Text>{t.date.toISOString()}</Text>
+              <Text style={[styles.labelFont, styles.labelHeader]}>Date</Text>
+              <Text style={styles.labelFont}>{t.date.toISOString()}</Text>
             </View>
             <View>
-              <Text>Fee</Text>
-              <Text>{t.fee}</Text>
+              <Text style={[styles.labelFont, styles.labelHeader]}>Fee</Text>
+              <Text style={styles.labelFont}>{t.fee}</Text>
             </View>
             {
               dynamicKeys.map((d, k) => {
                 return t.txData[d] && (
                   <View key={k}>
-                    <Text>{d}</Text>
-                    <Text>{t.txData[d]}</Text>
+                    <Text style={[styles.labelFont, styles.labelHeader]}>{d}</Text>
+                    <Text style={styles.labelFont}>{t.txData[d]}</Text>
                   </View>
                 )
               })
@@ -186,9 +186,31 @@ export class Transactions extends React.Component<{screenProps: {appState: AppSt
 
   render() {
     return (
-      <ScrollView style={{flex: 1, backgroundColor: 'white'}}>
+      <ScrollView style={styles.mainContent}>
         { this.state.transactions.map((t, i) => this.renderTransactions(t, i)) }
       </ScrollView>
     )
   }
 }
+
+const styles = StyleSheet.create({
+  mainContent: {
+    flex: 1,
+    backgroundColor: '#1f2d3b',
+    padding: 15,
+  },
+  labelFont: {
+    color: '#d1edff',
+    marginBottom: 5
+  },
+  labelHeader: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 15,
+    marginTop: 10
+  },
+  textInput: {
+    backgroundColor: '#d1edff',
+    marginBottom: 15
+  }
+});

@@ -11,7 +11,7 @@ let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 export class Balances extends React.Component<{ screenProps: {appState: any}, navigation?: any}, any> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <BackNav title='Wallet Dashboard' navigation={opt.navigation} />
+      header: <BackNav title='Wallet Balances' navigation={opt.navigation} />
     }
   }
 
@@ -110,7 +110,7 @@ export class BalancesPresentation extends React.Component<{
           ) : (
             <View style={{flexDirection: 'row'}}>
               <TextInput placeholder='Password' value={this.props.password} style={[styles.textInput, {flex: 4}]} onChangeText={(text) => this.props.handlePassword(text)} />
-              <TouchableOpacity style={{flex:1, backgroundColor: 'yellow', marginBottom: 15, alignItems: 'center', justifyContent: 'center'}} onPress={() => this.props.unlockWallet()}>
+              <TouchableOpacity style={{borderLeftWidth: 1, borderLeftColor: 'black', flex:1, backgroundColor: 'yellow', marginBottom: 15, alignItems: 'center', justifyContent: 'center'}} onPress={() => this.props.unlockWallet()}>
                 <IoniconsIcon style={{margin: 8}} name='ios-arrow-forward-outline' size={21} color='black' />
               </TouchableOpacity>
             </View>
