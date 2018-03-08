@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
+import { Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import { Header } from './Navigation';
 import { encryptPrivateKey } from './services/encryption';
 import { addNewWallet } from './services/wallet_persistance';
@@ -11,6 +11,7 @@ import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { OptionActionCreators } from './store/root-actions'
 import { AppState } from './store/options/index'
 import { Routes } from './Routing';
+import * as _ from 'lodash'
 
 interface StateProps {
   appState: AppState,
@@ -113,9 +114,25 @@ export class CreateAccount extends React.Component<
 
   public async verifyPassword(password: string, passwordVerify: string, accountType: 'generate' | 'import'): Promise<boolean> {
     if (!password) {
+      Alert.alert(
+        'Account Creation Failed',
+        'Please supply a password.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return false
     }
     if (password !== passwordVerify) {
+      Alert.alert(
+        'Account Creation Failed',
+        'Please ensure both passwords match.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return false
     }
     return true
@@ -123,9 +140,25 @@ export class CreateAccount extends React.Component<
 
   public async importKeys() {
     if (!this.state.publicKey) {
+      Alert.alert(
+        'Account Creation Failed',
+        'Please provide a valid public key.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return false
     }
     if (!this.state.privateKey) {
+      Alert.alert(
+        'Account Creation Failed',
+        'Please provide a valid private key.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return false
     }
     let validPassword = await this.verifyPassword(this.state.password, this.state.passwordVerify, 'import')

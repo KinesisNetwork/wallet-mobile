@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
+import { Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import * as _ from 'lodash'
 import { getActiveWallet, getActivePrivateKey } from './helpers/wallets'
 import { isPaymentMultiSig } from './helpers/accounts';
@@ -54,7 +54,14 @@ export class TransferState extends React.Component<TransferProps, State> {
     if (decryptedPrivateKey) {
       this.setState({decryptedPrivateKey})
     } else {
-      console.warn('incorrect pass')
+      Alert.alert(
+        'Invalid Password',
+        'To perform a transfer please enter the correct password.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
     }
   }
 

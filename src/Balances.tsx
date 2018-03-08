@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
+import { Alert, TouchableOpacity, ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { decryptPrivateKey } from './services/encryption';
@@ -8,6 +8,7 @@ let StellarSdk = require('stellar-sdk')
 let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { AppState } from './store/options/index'
+import * as _ from 'lodash'
 
 interface StateProps {
   appState: AppState,
@@ -57,7 +58,14 @@ export class BalancesState extends React.Component<BalanceProps, any> {
     if (decryptedPrivateKey) {
       this.setState({decryptedPrivateKey})
     } else {
-      console.warn('incorrect pass')
+      Alert.alert(
+        'Invalid Password',
+        'To view your private key, please enter the correct password.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
     }
   }
 
