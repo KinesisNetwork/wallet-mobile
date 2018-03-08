@@ -1,38 +1,15 @@
+import { Provider } from 'react-redux'
 import React from 'react'
 import { View } from 'react-native'
+import store from './store'
 import { GenerateAccount, ImportAccount } from './CreateAccount'
 import { Balances } from './Balances'
 import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
-import { defaultConnections, Connection,  Settings } from './Settings'
+import { Settings } from './Settings'
 import { Transfer } from './Transfer';
-import { retrieveWallets } from './services/wallet_persistance';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
-
-export interface AppState {
-  walletList: Wallet[],
-  passwordMap: PasswordMap,
-  connection: Connection,
-  activeWalletId: number
-}
-
-export interface PasswordMap {
-  [accountId: string]: {
-    timestamp: number,
-    password: string
-  }
-}
-
-export interface ViewParams {
-  walletIndex?: number
-}
-
-export interface Wallet {
-  publicKey: string,
-  encryptedPrivateKey: string,
-  accountName?: string
-}
 
 export const enum Routes {
   accountScreen = 'Account Screen',
@@ -90,20 +67,6 @@ let CreateAccount = TabNavigator(
   }
 );
 
-class CreateAccountWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = GenerateAccount.navigationOptions;
-  // Pass props to children
-  render() {
-    return <CreateAccount
-      screenProps={{
-          appState: this.props.screenProps.appState,
-          setWalletList: this.props.screenProps.setWalletList
-      }}
-      />
-  }
-}
-
 let SettingsScreen = TabNavigator(
   {
     [Routes.selectNetwork]: { screen: Settings }
@@ -142,20 +105,6 @@ let SettingsScreen = TabNavigator(
     swipeEnabled: false,
   }
 );
-
-class SettingsScreenWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = Settings.navigationOptions;
-  // Pass props to children
-  render() {
-    return <SettingsScreen
-      screenProps={{
-          appState: this.props.screenProps.appState,
-          changeConnection: this.props.screenProps.changeConnection
-      }}
-      />
-  }
-}
 
 let DashboardScreen = TabNavigator(
   {
@@ -203,40 +152,12 @@ let DashboardScreen = TabNavigator(
   }
 );
 
-class WalletScreenWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = WalletList.navigationOptions;
-  // Pass props to children
-  render() {
-    return <WalletStack
-        screenProps={{
-          setActiveWalletId: this.props.screenProps.setActiveWalletId,
-          rootNavigation: this.props.navigation,
-          appState: this.props.screenProps.appState
-        }}
-      />
-  }
-}
-
-class DashboardScreenWrapper extends React.Component<any, any> {
-  constructor (props: any) { super(props) }
-  static navigationOptions = Balances.navigationOptions;
-  // Pass props to children
-  render() {
-    return <DashboardScreen
-        screenProps={{
-          appState: this.props.screenProps.appState
-        }}
-      />
-  }
-}
-
 let WalletStack = StackNavigator({
     [Routes.walletList]: {
       screen: WalletList
     },
     [Routes.dashboardScreen]: {
-      screen: DashboardScreenWrapper
+      screen: DashboardScreen
     },
   },{
     initialRouteName: Routes.walletList,
@@ -250,13 +171,13 @@ let WalletStack = StackNavigator({
 
 let RootStack = StackNavigator({
     [Routes.settingsScreen]: {
-      screen: SettingsScreenWrapper
+      screen: SettingsScreen
     },
     [Routes.walletScreen]: {
-      screen: WalletScreenWrapper
+      screen: WalletStack
     },
     [Routes.accountScreen]: {
-      screen: CreateAccountWrapper
+      screen: CreateAccount
     },
   },{
     initialRouteName: Routes.accountScreen,
@@ -267,39 +188,26 @@ let RootStack = StackNavigator({
   }
 );
 
-export default class App extends React.Component<null, AppState> {
+export default class App extends React.Component<null, null> {
   constructor (props: any) {
     super(props)
-    this.state = {walletList: [], connection: defaultConnections[0], passwordMap: {}, activeWalletId: 0}
   }
 
   public componentDidMount() {
-    retrieveWallets()
-      .then((walletList: Wallet[]) => {
-        this.setWalletList(walletList)
-      })
+    // retrieveWallets()
+    //   .then((walletList: Wallet[]) => {
+    //     // this.setWalletList(walletList)
+    //   })
   }
 
-  public changeConnection (connection: any) {
-    this.setState({connection})
-  }
-  public setActiveWalletId (activeWalletId: any) {
-    this.setState({activeWalletId})
-  }
-  public setWalletList (walletList: Wallet[]): void {
-    this.setState({walletList})
-  }
   render() {
-    return <View style={{flex: 1, backgroundColor: '#000'}}>
-      <RootStack
-        screenProps={{
-          appState: this.state,
-          changeConnection: this.changeConnection.bind(this),
-          setWalletList: this.setWalletList.bind(this),
-          setActiveWalletId: this.setActiveWalletId.bind(this)
-        }}
-      />
-    </View>
+    return (
+      <Provider store={store}>
+        <View style={{flex: 1, backgroundColor: '#000'}}>
+          <RootStack />
+        </View>
+      </Provider>
+    )
   }
 }
 

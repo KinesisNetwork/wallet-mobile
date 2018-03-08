@@ -2,13 +2,30 @@ import React from 'react';
 import { TouchableOpacity, ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
-import { AppState } from './Routing'
 import { decryptPrivateKey } from './services/encryption';
 let { NavigationActions } = require('react-navigation')
 let StellarSdk = require('stellar-sdk')
 let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+import { AppState } from './store/options/index'
 
-export class Balances extends React.Component<{ screenProps: {appState: any}, navigation?: any}, any> {
+interface StateProps {
+  appState: AppState,
+  navigation: any
+}
+
+const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, ownProps: any) => ({
+  appState: options,
+  ...ownProps
+})
+
+interface DispatchProps { }
+
+const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({})
+
+type BalanceProps = StateProps & DispatchProps
+
+export class BalancesState extends React.Component<BalanceProps, any> {
   static navigationOptions = (opt: any) => {
     return {
       header: <BackNav title='Wallet Balances' navigation={opt.navigation} />
@@ -36,7 +53,7 @@ export class Balances extends React.Component<{ screenProps: {appState: any}, na
   }
 
   public async unlockWallet() {
-    let decryptedPrivateKey = decryptPrivateKey(getActiveWallet(this.props.screenProps.appState).encryptedPrivateKey, this.state.password)
+    let decryptedPrivateKey = decryptPrivateKey(getActiveWallet(this.props.appState).encryptedPrivateKey, this.state.password)
     if (decryptedPrivateKey) {
       this.setState({decryptedPrivateKey})
     } else {
@@ -54,8 +71,8 @@ export class Balances extends React.Component<{ screenProps: {appState: any}, na
 
   public async loadBalances(props: any) {
     try {
-      const server = new StellarSdk.Server(props.screenProps.appState.connection.horizonServer, {allowHttp: true})
-      const account = await server.loadAccount(getActiveWallet(props.screenProps.appState).publicKey)
+      const server = new StellarSdk.Server(props.appState.connection.horizonServer, {allowHttp: true})
+      const account = await server.loadAccount(getActiveWallet(props.appState).publicKey)
       console.warn(account)
       const kinesisBalance = Number(account.balances.filter((b: any) => b.asset_type === 'native')[0].balance)
       this.setState({account, kinesisBalance, accountActivated: true})
@@ -71,7 +88,7 @@ export class Balances extends React.Component<{ screenProps: {appState: any}, na
         deleteWallet={this.deleteWallet.bind(this)}
         handlePassword={this.handlePassword.bind(this)}
         unlockWallet={this.unlockWallet.bind(this)}
-        appState={this.props.screenProps.appState}
+        appState={this.props.appState}
         privateKey={this.state.decryptedPrivateKey}
         password={this.state.password}
         kinesisBalance={this.state.kinesisBalance}
@@ -155,3 +172,4 @@ const styles = StyleSheet.create({
     marginBottom: 15
   }
 });
+export const Balances = connect(mapStateToProps, mapDispatchToProps)(BalancesState)

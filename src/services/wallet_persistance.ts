@@ -1,5 +1,5 @@
-import { Wallet } from '../Routing';
 import { AsyncStorage } from 'react-native'
+import { Wallet } from '../store/options/index';
 const walletsKey = 'wallets'
 
 export function addNewWallet(publicKey: string, encryptedPrivateKey: string): Promise<Wallet[]> {

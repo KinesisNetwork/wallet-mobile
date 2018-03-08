@@ -1,10 +1,10 @@
-import { AppState, Wallet } from '../Routing'
 import * as _ from 'lodash'
-import { decryptPrivateKey } from '../services/encryption';
+import { decryptPrivateKey } from '../services/encryption'
+import { AppState, Wallet } from '../store/options/index'
 
 export function getActiveWallet(appState: AppState): Wallet {
   let walletList = appState.walletList
-  let walletId = appState.activeWalletId
+  let walletId = appState.activeWalletIndex
   return walletList[walletId]
 }
 
