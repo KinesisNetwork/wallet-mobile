@@ -385,8 +385,8 @@ export class TransferPresentation extends React.Component<{
         {
           this.props.loading ? (
             <View>
-              <ActivityIndicator size="large" color="#0000ff" />
-              <Text style={styles.labelFont}>Processing Transaction.</Text>
+              <ActivityIndicator size="large" color="yellow" />
+              <Text style={[styles.labelFont, {textAlign: 'center', marginTop: 10}]}>Processing Transaction.</Text>
             </View>
           ) : (
             <View>

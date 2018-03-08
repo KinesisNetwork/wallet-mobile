@@ -1,5 +1,5 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, Text, View, ScrollView } from 'react-native'
+import { Alert, ActivityIndicator, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 let StellarSdk: any = require('stellar-sdk')
@@ -104,33 +104,45 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
     const server = new StellarSdk.Server(this.props.appState.connection.horizonServer, {allowHttp: true})
 
     // Load 2 pages of records at a time, initializing if we do not yet have transactions
-    const currentPage = this.state.currentPage
-      ? this.state.currentPage
-      : await server.transactions().forAccount(getActiveWallet(this.props.appState).publicKey).order('desc').call()
+    try {
+      const currentPage = this.state.currentPage
+        ? this.state.currentPage
+        : await server.transactions().forAccount(getActiveWallet(this.props.appState).publicKey).order('desc').call()
 
-    const nextPage = await currentPage.next()
+      const nextPage = await currentPage.next()
 
-    if (nextPage.records.length === 0) {
-      this.setState({lastPage: true})
+      if (nextPage.records.length === 0) {
+        this.setState({lastPage: true})
+      }
+
+      const records = currentPage.records.concat(nextPage.records)
+
+      const transactions = _.flatten(await Promise.all(records.map(async (r: any) => {
+        const operations = await r.operations()
+        return operations._embedded.records.map((o: any) => {
+          return {
+            txId: r.id,
+            txType: StellarTxType[o.type_i],
+            txData: this.determineTxData(o),
+            date: new Date(r.created_at),
+            memo: r.memo,
+            fee: _.round(r.fee_paid * 0.0000001, 8)
+          }
+        })
+      })))
+      this.setState({loading: false, transactions: this.state.transactions.concat(transactions as any), currentPage: nextPage})
+    } catch (e) {
+      this.setState({loading: false})
+      Alert.alert(
+        'Oops!',
+        `An error occured: ${JSON.stringify(e.message)}`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
     }
 
-    const records = currentPage.records.concat(nextPage.records)
-
-    const transactions = _.flatten(await Promise.all(records.map(async (r: any) => {
-      const operations = await r.operations()
-      return operations._embedded.records.map((o: any) => {
-        return {
-          txId: r.id,
-          txType: StellarTxType[o.type_i],
-          txData: this.determineTxData(o),
-          date: new Date(r.created_at),
-          memo: r.memo,
-          fee: _.round(r.fee_paid * 0.0000001, 8)
-        }
-      })
-    })))
-
-    this.setState({loading: false, transactions: this.state.transactions.concat(transactions as any), currentPage: nextPage})
   }
 
   public renderTransactions (t: any, i: number) {
@@ -207,16 +219,14 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
   render() {
     return (
       <ScrollView style={styles.mainContent}>
-      this.props.loading ? (
+        {this.state.loading ? (
           <View style={{flex: 1}}>
-            <ActivityIndicator size="large" color="#0000ff" />
-            <Text style={styles.labelFont}>Processing Transaction.</Text>
+            <ActivityIndicator size="large" color="yellow" />
+            <Text style={[styles.labelFont, {textAlign: 'center', marginTop: 10}]}>Loading Transactions</Text>
           </View>
         ) : (
-          <View style={{flex: 1}}>
-            { this.state.transactions.map((t, i) => this.renderTransactions(t, i)) }
-          </View>
-        )
+          this.state.transactions.map((t, i) => this.renderTransactions(t, i))
+        )}
       </ScrollView>
     )
   }
