@@ -56,7 +56,7 @@ export class WalletListState extends React.Component<WalletListProps, {}> {
                 <IoniconsIcon style={{margin: 8}} name='ios-arrow-forward-outline' size={21} color='#d1edff' />
               </TouchableOpacity>
             )
-          })}
+          }).reverse()}
         </ScrollView>
         <TouchableOpacity onPress={() => this.props.navigation.navigate(Routes.accountScreen)} style={{
           flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, margin: 12, padding: 8, borderColor: 'yellow'

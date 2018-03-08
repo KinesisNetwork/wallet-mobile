@@ -10,6 +10,7 @@ import { retrieveWallets } from './services/wallet_persistance';
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { OptionActionCreators } from './store/root-actions'
 import { AppState } from './store/options/index'
+import { Routes } from './Routing';
 
 interface StateProps {
   appState: AppState,
@@ -23,11 +24,15 @@ const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, 
 
 interface DispatchProps {
   setWalletList: Function,
+  setActiveWalletIndex: Function,
 }
 
 const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({
   setWalletList: async (walletList: Wallet[]) => {
     dispatch(OptionActionCreators.setWalletList.create(walletList))
+  },
+  setActiveWalletIndex: async (index: number) => {
+    dispatch(OptionActionCreators.setActiveWalletIndex.create(index))
   }
 })
 
@@ -61,18 +66,20 @@ export class ImportAccountWrapper extends React.Component<AccountProps, any> {
   }
 }
 
+const defaultState = {
+  privateKey: '',
+  publicKey: '',
+  password: '',
+  passwordVerify: ''
+}
+
 export class CreateAccount extends React.Component<
-  { setWalletList: Function, appState: AppState, navigation: any, accountView: AccountView },
+  { setActiveWalletIndex: Function, setWalletList: Function, appState: AppState, navigation: any, accountView: AccountView },
   { privateKey: string, publicKey: string, password: string, passwordVerify: string }>
 {
   constructor (props: any) {
     super(props)
-    this.state = {
-      privateKey: '',
-      publicKey: '',
-      password: '',
-      passwordVerify: ''
-    }
+    this.state = {...defaultState}
   }
 
   public componentDidMount() {
@@ -97,6 +104,10 @@ export class CreateAccount extends React.Component<
           publicKey: accountKey,
           encryptedPrivateKey: encryptedPrivateKey
         }))
+        this.props.setActiveWalletIndex(walletList.length - 1)
+        this.setState({...defaultState}, () => {
+          this.props.navigation.navigate(Routes.dashboardScreen)
+        })
       })
   }
 
@@ -153,6 +164,10 @@ export class CreateAccount extends React.Component<
         handlePrivate={this.handlePrivate.bind(this)}
         handleVerifyPassword={this.handleVerifyPassword.bind(this)}
         handlePassword={this.handlePassword.bind(this)}
+        privateKey={this.state.privateKey}
+        publicKey={this.state.publicKey}
+        password={this.state.password}
+        passwordVerify={this.state.passwordVerify}
       />
     )
   }
@@ -167,6 +182,10 @@ export class CreateAccountPresentation extends React.Component<{
   handlePrivate: Function,
   handleVerifyPassword: Function,
   handlePassword: Function,
+  privateKey: string,
+  publicKey: string,
+  password: string,
+  passwordVerify: string
 }, {}> {
   constructor (props: any) {
     super(props)
@@ -178,9 +197,9 @@ export class CreateAccountPresentation extends React.Component<{
         {(this.props.accountView === 'generate') && (
           <View style={{flex: 1, paddingBottom: 60 }}>
             <Text style={styles.labelFont}>Wallet Password</Text>
-            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+            <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
             <Text style={styles.labelFont}>Repeat Wallet Password</Text>
-            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+            <TextInput value={this.props.passwordVerify} style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
             <TouchableOpacity onPress={() => this.props.generate()} style={{
               flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
             }}>
@@ -191,13 +210,13 @@ export class CreateAccountPresentation extends React.Component<{
         {(this.props.accountView === 'import') && (
           <View style={{flex: 1, paddingBottom: 60 }}>
             <Text style={styles.labelFont}>Public Key</Text>
-            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePublic(text)} />
+            <TextInput value={this.props.publicKey} style={styles.textInput} onChangeText={(text) => this.props.handlePublic(text)} />
             <Text style={styles.labelFont}>Private Key</Text>
-            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePrivate(text)} />
+            <TextInput value={this.props.privateKey} style={styles.textInput} onChangeText={(text) => this.props.handlePrivate(text)} />
             <Text style={styles.labelFont}>Wallet Password</Text>
-            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
+            <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
             <Text style={styles.labelFont}>Repeat Wallet Password</Text>
-            <TextInput style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
+            <TextInput value={this.props.passwordVerify} style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
             <TouchableOpacity onPress={() => this.props.importKeys()} style={{
               flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
             }}>
