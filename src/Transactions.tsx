@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native'
+import { ActivityIndicator, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 let StellarSdk: any = require('stellar-sdk')
@@ -52,10 +52,11 @@ export interface IState {
   transactions: HumanTransactions[]
   currentPage: any
   lastPage: boolean
-  recentlyLoaded: boolean
+  recentlyLoaded: boolean,
+  loading: boolean
 }
 
-const defaultState = { transactions: [], lastPage: false, currentPage: undefined, recentlyLoaded: false }
+const defaultState = { transactions: [], lastPage: false, currentPage: undefined, recentlyLoaded: false, loading: false }
 export class TransactionsState extends React.Component<TransactionsProps, IState> {
   static navigationOptions = (opt: any) => {
     return {
@@ -98,6 +99,7 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
 
   // TODO: Hook this up to a next page button that is hidden if lastPage === true
   async transactionPage (): Promise<void> {
+    this.setState({loading: true})
     StellarSdk.Network.use(new StellarSdk.Network(this.props.appState.connection.networkPassphrase))
     const server = new StellarSdk.Server(this.props.appState.connection.horizonServer, {allowHttp: true})
 
@@ -128,7 +130,7 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
       })
     })))
 
-    this.setState({transactions: this.state.transactions.concat(transactions as any), currentPage: nextPage})
+    this.setState({loading: false, transactions: this.state.transactions.concat(transactions as any), currentPage: nextPage})
   }
 
   public renderTransactions (t: any, i: number) {
@@ -205,7 +207,16 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
   render() {
     return (
       <ScrollView style={styles.mainContent}>
-        { this.state.transactions.map((t, i) => this.renderTransactions(t, i)) }
+      this.props.loading ? (
+          <View style={{flex: 1}}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.labelFont}>Processing Transaction.</Text>
+          </View>
+        ) : (
+          <View style={{flex: 1}}>
+            { this.state.transactions.map((t, i) => this.renderTransactions(t, i)) }
+          </View>
+        )
       </ScrollView>
     )
   }

@@ -395,7 +395,7 @@ export class TransferPresentation extends React.Component<{
                   <Text style={styles.labelFont}>Target Account</Text>
                   <TextInput value={this.props.targetAddress} style={styles.textInput} onChangeText={(text: string) => this.props.handleAddress(text)} />
                   <Text style={styles.labelFont}>Amount</Text>
-                  <TextInput value={this.props.transferAmount} style={styles.textInput} onChangeText={(text: string) => this.props.handleAmount(text)} />
+                  <TextInput value={this.props.transferAmount} keyboardType='numeric' style={styles.textInput} onChangeText={(text: string) => this.props.handleAmount(text)} />
                   <Text style={styles.labelFont}>Message (Optional)</Text>
                   <TextInput value={this.props.memo} style={styles.textInput} onChangeText={(text) => this.props.handleMemo(text)} />
                   <TouchableOpacity onPress={() => this.props.handleSubmit()} style={{
