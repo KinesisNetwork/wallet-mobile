@@ -127,14 +127,14 @@ export class BalancesPresentation extends React.Component<{
       <ScrollView style={styles.mainContent}>
         <View style={{paddingBottom: 60}}>
           <Text style={[styles.labelFont, styles.labelHeader]}>Public Key: </Text>
-          <Text style={styles.labelFont}>{activeWallet.publicKey}</Text>
+          <Text selectable={true} style={styles.labelFont}>{activeWallet.publicKey}</Text>
           <Text style={[styles.labelFont, styles.labelHeader]}>Reveal Private Key:</Text>
 
           {(this.props.privateKey) ? (
-            <Text style={styles.labelFont}>{this.props.privateKey}</Text>
+            <Text selectable={true} style={styles.labelFont}>{this.props.privateKey}</Text>
           ) : (
             <View style={{flexDirection: 'row'}}>
-              <TextInput placeholder='Password' value={this.props.password} style={[styles.textInput, {flex: 4}]} onChangeText={(text) => this.props.handlePassword(text)} />
+              <TextInput secureTextEntry={true} placeholder='Password' value={this.props.password} style={[styles.textInput, {flex: 4}]} onChangeText={(text) => this.props.handlePassword(text)} />
               <TouchableOpacity style={{borderLeftWidth: 1, borderLeftColor: 'black', flex:1, backgroundColor: 'yellow', marginBottom: 15, alignItems: 'center', justifyContent: 'center'}} onPress={() => this.props.unlockWallet()}>
                 <IoniconsIcon style={{margin: 8}} name='ios-arrow-forward-outline' size={21} color='black' />
               </TouchableOpacity>
@@ -143,11 +143,11 @@ export class BalancesPresentation extends React.Component<{
 
           <View>
             <Text style={[styles.labelFont, styles.labelHeader]}>Account activated: </Text>
-            <Text style={styles.labelFont}>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
+            <Text selectable={true} style={styles.labelFont}>{this.props.accountActivated ? 'Yes' : 'No'}</Text>
           </View>
           <View>
             <Text style={[styles.labelFont, styles.labelHeader]}>Kinesis Balance: </Text>
-            <Text style={styles.labelFont}>{this.props.kinesisBalance}</Text>
+            <Text selectable={true} style={styles.labelFont}>{this.props.kinesisBalance}</Text>
           </View>
           <View style={{display: 'none'}}>
             <Button title='Delete wallet' onPress={() => this.props.deleteWallet()} />

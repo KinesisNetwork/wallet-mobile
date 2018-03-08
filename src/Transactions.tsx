@@ -148,7 +148,7 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
   public renderTransactions (t: any, i: number) {
       const dynamicKeys = Object.keys(t.txData)
       return (
-        <View key={i}>
+        <View key={i} style={{marginBottom: 80}}>
           <View>
             <Text style={[styles.labelFont, styles.labelHeader]}>{t.txType}</Text>
           </View>

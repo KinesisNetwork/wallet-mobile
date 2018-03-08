@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ActivityIndicator, Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import * as _ from 'lodash'
-import { getActiveWallet, getActivePrivateKey } from './helpers/wallets'
+import { getActiveWallet } from './helpers/wallets'
 import { isPaymentMultiSig } from './helpers/accounts';
 import { BackNav } from './Navigation';
 import { decryptPrivateKey } from './services/encryption';
@@ -297,8 +297,7 @@ export class TransferState extends React.Component<TransferProps, State> {
       return this.focusElement('transfer-amount')
     }
 
-    let privateKey = getActivePrivateKey(this.props.appState)
-    if (!privateKey) {
+    if (!this.state.decryptedPrivateKey) {
       Alert.alert(
         'Oops!',
         `Please unlock your account to transfer funds`,
@@ -407,7 +406,7 @@ export class TransferPresentation extends React.Component<{
               ) : (
                 <View>
                   <Text style={styles.labelFont}>Password</Text>
-                  <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} />
+                  <TextInput value={this.props.password} style={styles.textInput} secureTextEntry={true} onChangeText={(text) => this.props.handlePassword(text)} />
                   <TouchableOpacity onPress={() => this.props.unlockWallet()} style={{
                     flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
                   }}>
