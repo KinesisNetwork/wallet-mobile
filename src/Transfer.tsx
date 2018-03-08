@@ -444,7 +444,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     backgroundColor: '#d1edff',
-    marginBottom: 15
+    marginBottom: 15,
+    padding: 12
   }
 });
 
