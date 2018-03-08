@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
+import { ActivityIndicator, Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import * as _ from 'lodash'
 import { getActiveWallet, getActivePrivateKey } from './helpers/wallets'
 import { isPaymentMultiSig } from './helpers/accounts';
@@ -167,6 +167,7 @@ export class TransferState extends React.Component<TransferProps, State> {
       }
 
       try {
+        this.setState({loading: true})
         await server.submitTransaction(newAccountTransaction)
         Alert.alert(
           'Success!',
@@ -188,6 +189,7 @@ export class TransferState extends React.Component<TransferProps, State> {
         )
       }
 
+      this.setState({loading: false})
       return
     }
 
@@ -245,6 +247,7 @@ export class TransferState extends React.Component<TransferProps, State> {
       return
     }
 
+    this.setState({loading: true})
     try {
       await server.submitTransaction(paymentTransaction)
       Alert.alert(
@@ -267,7 +270,7 @@ export class TransferState extends React.Component<TransferProps, State> {
       )
       return
     }
-
+    this.setState({loading: false})
   }
 
   public async handleSubmit() {
@@ -382,7 +385,8 @@ export class TransferPresentation extends React.Component<{
         {
           this.props.loading ? (
             <View>
-              <Text style={styles.labelFont}>Loading</Text>
+              <ActivityIndicator size="large" color="#0000ff" />
+              <Text style={styles.labelFont}>Processing Transaction.</Text>
             </View>
           ) : (
             <View>
