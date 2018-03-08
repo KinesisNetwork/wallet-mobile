@@ -1,8 +1,13 @@
+import { Provider } from 'react-redux'
 import React from 'react'
 import { View } from 'react-native'
-import { Create } from './Create'
-import { WalletList, Dashboard } from './Dashboard'
+import store from './store'
+import { GenerateAccount, ImportAccount } from './CreateAccount'
+import { Balances } from './Balances'
+import { Transactions } from './Transactions'
+import { WalletList } from './WalletList'
 import { Settings } from './Settings'
+import { Transfer } from './Transfer';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
 
@@ -14,7 +19,6 @@ export const enum Routes {
   accountGenerate = 'Generate',
   accountImport = 'Import',
   selectNetwork = 'Select Network',
-  addNetwork = 'Add Network',
   dashboardBalances = 'Balances',
   dashboardTransfer = 'Transfer',
   dashboardTransactions = 'Transactions',
@@ -23,8 +27,8 @@ export const enum Routes {
 
 let CreateAccount = TabNavigator(
   {
-    [Routes.accountGenerate]: { screen: Create },
-    [Routes.accountImport]: { screen: Create },
+    [Routes.accountGenerate]: { screen: GenerateAccount },
+    [Routes.accountImport]: { screen: ImportAccount },
   },
   {
     navigationOptions: ({ navigation }: any) => ({
@@ -65,8 +69,7 @@ let CreateAccount = TabNavigator(
 
 let SettingsScreen = TabNavigator(
   {
-    [Routes.selectNetwork]: { screen: Settings },
-    [Routes.addNetwork]: { screen: Settings },
+    [Routes.selectNetwork]: { screen: Settings }
   },
   {
     navigationOptions: ({ navigation }: any) => ({
@@ -75,8 +78,6 @@ let SettingsScreen = TabNavigator(
         let iconName;
         if (routeName === Routes.selectNetwork) {
           iconName = `globe`;
-        } else if (routeName === Routes.addNetwork) {
-          iconName = `globe-alt`;
         }
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
@@ -105,12 +106,11 @@ let SettingsScreen = TabNavigator(
   }
 );
 
-
 let DashboardScreen = TabNavigator(
   {
-    [Routes.dashboardBalances]: { screen: Dashboard },
-    [Routes.dashboardTransfer]: { screen: Dashboard },
-    [Routes.dashboardTransactions]: { screen: Dashboard }
+    [Routes.dashboardBalances]: { screen: Balances },
+    [Routes.dashboardTransfer]: { screen: Transfer },
+    [Routes.dashboardTransactions]: { screen: Transactions }
   },
   {
     navigationOptions: ({ navigation }: any) => ({
@@ -168,6 +168,7 @@ let WalletStack = StackNavigator({
   }
 );
 
+
 let RootStack = StackNavigator({
     [Routes.settingsScreen]: {
       screen: SettingsScreen
@@ -187,11 +188,26 @@ let RootStack = StackNavigator({
   }
 );
 
+export default class App extends React.Component<null, null> {
+  constructor (props: any) {
+    super(props)
+  }
 
+  public componentDidMount() {
+    // retrieveWallets()
+    //   .then((walletList: Wallet[]) => {
+    //     // this.setWalletList(walletList)
+    //   })
+  }
 
-export default class App extends React.Component {
   render() {
-    return <View style={{flex: 1, backgroundColor: '#000'}}><RootStack/></View>
+    return (
+      <Provider store={store}>
+        <View style={{flex: 1, backgroundColor: '#000'}}>
+          <RootStack />
+        </View>
+      </Provider>
+    )
   }
 }
 
