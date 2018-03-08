@@ -167,7 +167,6 @@ export class TransferState extends React.Component<TransferProps, State> {
       }
 
       try {
-        this.setState({loading: true})
         await server.submitTransaction(newAccountTransaction)
         Alert.alert(
           'Success!',
@@ -189,7 +188,6 @@ export class TransferState extends React.Component<TransferProps, State> {
         )
       }
 
-      this.setState({loading: false})
       return
     }
 
@@ -247,7 +245,6 @@ export class TransferState extends React.Component<TransferProps, State> {
       return
     }
 
-    this.setState({loading: true})
     try {
       await server.submitTransaction(paymentTransaction)
       Alert.alert(
@@ -270,10 +267,12 @@ export class TransferState extends React.Component<TransferProps, State> {
       )
       return
     }
-    this.setState({loading: false})
   }
 
   public async handleSubmit() {
+    if (this.state.loading) {
+      return false
+    }
     if (!this.state.targetAddress) {
       Alert.alert(
         'Oops!',
@@ -308,7 +307,14 @@ export class TransferState extends React.Component<TransferProps, State> {
       )
       return this.focusElement('wallet-password')
     }
-    this.transferKinesis(this.state.targetAddress, this.state.transferAmount)
+    this.setState({loading: true}, () => {
+      this.transferKinesis(this.state.targetAddress, this.state.transferAmount)
+        .then(() => {
+          this.setState({loading: false})
+        }, () => {
+          this.setState({loading: false})
+        })
+    })
   }
 
   private focusElement = (id: string): void => {
@@ -379,44 +385,42 @@ export class TransferPresentation extends React.Component<{
   }
 
   render() {
+    let buttonColor = this.props.loading ? 'grey' : 'yellow'
     return (
       <ScrollView style={styles.mainContent}>
-        {
-          this.props.loading ? (
+        <View>
+          {(this.props.privateKey) ? (
             <View>
-              <ActivityIndicator size="large" color="yellow" />
-              <Text style={[styles.labelFont, {textAlign: 'center', marginTop: 10}]}>Processing Transaction.</Text>
-            </View>
-          ) : (
-            <View>
-              {(this.props.privateKey) ? (
-                <View>
-                  <Text style={styles.labelFont}>Target Account</Text>
-                  <TextInput value={this.props.targetAddress} style={styles.textInput} onChangeText={(text: string) => this.props.handleAddress(text)} />
-                  <Text style={styles.labelFont}>Amount</Text>
-                  <TextInput value={this.props.transferAmount} keyboardType='numeric' style={styles.textInput} onChangeText={(text: string) => this.props.handleAmount(text)} />
-                  <Text style={styles.labelFont}>Message (Optional)</Text>
-                  <TextInput value={this.props.memo} style={styles.textInput} onChangeText={(text) => this.props.handleMemo(text)} />
-                  <TouchableOpacity onPress={() => this.props.handleSubmit()} style={{
-                    flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
-                  }}>
-                    <Text style={{color: 'yellow'}}>Transfer</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View>
-                  <Text style={styles.labelFont}>Password</Text>
-                  <TextInput value={this.props.password} style={styles.textInput} secureTextEntry={true} onChangeText={(text) => this.props.handlePassword(text)} />
-                  <TouchableOpacity onPress={() => this.props.unlockWallet()} style={{
-                    flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
-                  }}>
-                    <Text style={{color: 'yellow'}}>Unlock</Text>
-                  </TouchableOpacity>
+              <Text style={styles.labelFont}>Target Account</Text>
+              <TextInput value={this.props.targetAddress} style={styles.textInput} onChangeText={(text: string) => this.props.handleAddress(text)} />
+              <Text style={styles.labelFont}>Amount</Text>
+              <TextInput value={this.props.transferAmount} keyboardType='numeric' style={styles.textInput} onChangeText={(text: string) => this.props.handleAmount(text)} />
+              <Text style={styles.labelFont}>Message (Optional)</Text>
+              <TextInput value={this.props.memo} style={styles.textInput} onChangeText={(text) => this.props.handleMemo(text)} />
+              <TouchableOpacity onPress={() => this.props.handleSubmit()} style={{
+                flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: buttonColor
+              }}>
+                <Text style={{color: buttonColor}}>Transfer</Text>
+              </TouchableOpacity>
+              {this.props.loading && (
+                <View style={{marginTop: 20}}>
+                  <ActivityIndicator size="large" color="yellow" />
+                  <Text style={[styles.labelFont, {textAlign: 'center', marginTop: 10}]}>Processing Transaction.</Text>
                 </View>
               )}
             </View>
-          )
-        }
+          ) : (
+            <View>
+              <Text style={styles.labelFont}>Password</Text>
+              <TextInput value={this.props.password} style={styles.textInput} secureTextEntry={true} onChangeText={(text) => this.props.handlePassword(text)} />
+              <TouchableOpacity onPress={() => this.props.unlockWallet()} style={{
+                flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
+              }}>
+                <Text style={{color: 'yellow'}}>Unlock</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       </ScrollView>
     )
   }
