@@ -270,7 +270,8 @@ const styles = StyleSheet.create({
   },
   labelFont: {
     color: '#d1edff',
-    marginBottom: 5
+    marginBottom: 10,
+    marginTop: 4
   },
   textInput: {
     backgroundColor: '#d1edff',
