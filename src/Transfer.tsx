@@ -81,7 +81,7 @@ export class TransferState extends React.Component<TransferProps, State> {
       ? mostRecentLedger.records[0].base_reserve_in_stroops
       : Number(mostRecentLedger.records[0].base_reserve)
 
-    // const currentBaseFee = _.round(currentBaseFeeInStroops * 0.0000001, 8)
+    const currentBaseFee = _.round(currentBaseFeeInStroops * 0.0000001, 8)
 
     // The multiplier is defined here: https://www.stellar.org/developers/guides/concepts/fees.html
     const currentBaseReserve = _.round(currentBaseReserveInStroops * 0.0000001, 8) * 2
@@ -91,7 +91,14 @@ export class TransferState extends React.Component<TransferProps, State> {
     try {
       account = await server.loadAccount(getActiveWallet(this.props.appState).publicKey)
     } catch (e) {
-      // return swal('Oops!', 'Your account does not have any funds to send money with', 'error')
+      Alert.alert(
+        'Oops!',
+        'Your account does not have any funds to send money with.',
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return false
     }
 
@@ -105,21 +112,31 @@ export class TransferState extends React.Component<TransferProps, State> {
       await server.loadAccount(targetAddress)
     } catch (e) {
       if (Number(amount) < currentBaseReserve) {
-        // swal('Oops!', `You are transfering to an account without any funds. The minimum transfer required is ${currentBaseReserve} Kinesis`, 'error')
+        Alert.alert(
+          'Oops!',
+          `You are transfering to an account without any funds. The minimum transfer required is ${currentBaseReserve} Kinesis.`,
+          [
+            {text: 'OK', onPress: _.noop},
+          ],
+          { cancelable: false }
+        )
         return false
       }
 
-      // const willCreate = await swal({
-      //   title: `Continue with transfer?`,
-      //   text: `
-      //     The account that you are transfering with does not have any funds yet, are you sure you want to continue?
-      //     The fee will be ${currentBaseFee} Kinesis
-      //   `,
-      //   icon: `warning`,
-      //   dangerMode: true,
-      //   buttons: true
-      // })
-      const willCreate = true
+      const willCreate = await new Promise((res, rej) => {
+        Alert.alert(
+          'Continue with transfer?',
+          `
+           The account that you are transfering with does not have any funds yet, are you sure you want to continue?
+           The fee will be ${currentBaseFee} Kinesis
+          `,
+          [
+            {text: 'Cancel', onPress: () => res(false), style: 'cancel'},
+            {text: 'OK', onPress: () => res(true)},
+          ],
+          { cancelable: true }
+        )
+      })
 
       if (!willCreate) {
         return
@@ -138,18 +155,37 @@ export class TransferState extends React.Component<TransferProps, State> {
       newAccountTransaction.sign(StellarSdk.Keypair.fromSecret(this.state.decryptedPrivateKey))
 
       if (needMoreSigners) {
-        // return showMultiSigTransaction(newAccountTransaction)
-        console.error('multisig not supported')
+        Alert.alert(
+          'Oops!',
+          `The mobile wallet does not currently support multi sig.`,
+          [
+            {text: 'OK', onPress: _.noop},
+          ],
+          { cancelable: false }
+        )
         return false
       }
 
       try {
         await server.submitTransaction(newAccountTransaction)
-        // swal('Success!', 'Successfully submitted transaction', 'success')
+        Alert.alert(
+          'Success!',
+          `Successfully submitted the transaction.`,
+          [
+            {text: 'OK', onPress: _.noop},
+          ],
+          { cancelable: false }
+        )
       } catch (e) {
-        // let opCode = _.get(e, 'data.extras.result_codes.operations[0]', _.get(e, 'message', 'Unkown Error'))
-        console.error('Error occured submitting transaction', e)
-        // swal('Oops!', `An error occurred while submitting the transaction to the network: ${opCode}`, 'error')
+        let opCode = _.get(e, 'data.extras.result_codes.operations[0]', _.get(e, 'message', 'Unkown Error'))
+        Alert.alert(
+          'Oops!',
+          `An error occurred while submitting the transaction to the network: ${opCode}`,
+          [
+            {text: 'OK', onPress: _.noop},
+          ],
+          { cancelable: false }
+        )
       }
 
       return
@@ -169,23 +205,41 @@ export class TransferState extends React.Component<TransferProps, State> {
       paymentTransaction.sign(StellarSdk.Keypair.fromSecret(this.state.decryptedPrivateKey))
 
       if (needMoreSigners) {
-        console.error('multisig not supported')
-        // return showMultiSigTransaction(paymentTransaction)
+        Alert.alert(
+          'Oops!',
+          `The mobile wallet does not currently support multi sig.`,
+          [
+            {text: 'OK', onPress: _.noop},
+          ],
+          { cancelable: false }
+        )
         return false
       }
     } catch (e) {
-      // return swal('Oops!', `This transaction is invalid: ${_.capitalize(e.message)}.`, 'error')
+      Alert.alert(
+        'Oops!',
+        `This transaction is invalid: ${_.capitalize(e.message)}.`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return false
     }
 
-    // const continueTransfer = await swal({
-    //   title: 'Continue with transfer?',
-    //   text: `Once submitted, the transaction can not be reverted! The fee will be ${currentBaseFee} Kinesis`,
-    //   icon: 'warning',
-    //   dangerMode: true,
-    //   buttons: true
-    // })
-    const continueTransfer = true
+    const continueTransfer = await new Promise((res, rej) => {
+      Alert.alert(
+        'Continue with transfer?',
+        `
+          Once submitted, the transaction can not be reverted! The fee will be ${currentBaseFee} Kinesis
+        `,
+        [
+          {text: 'Cancel', onPress: () => res(false), style: 'cancel'},
+          {text: 'OK', onPress: () => res(true)},
+        ],
+        { cancelable: true }
+      )
+    })
 
     if (!continueTransfer) {
       return
@@ -193,11 +247,24 @@ export class TransferState extends React.Component<TransferProps, State> {
 
     try {
       await server.submitTransaction(paymentTransaction)
-      // swal('Success!', 'Successfully submitted transaction', 'success')
+      Alert.alert(
+        'Success!',
+        `Successfully submitted the transaction.`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
     } catch (e) {
-      // let opCode = _.get(e, 'data.extras.result_codes.operations[0]', _.get(e, 'message', 'Unkown Error'))
-      console.error('Error occured submitting transaction', e)
-      // swal('Oops!', `An error occurred while submitting the transaction to the network: ${opCode}`, 'error')
+      let opCode = _.get(e, 'data.extras.result_codes.operations[0]', _.get(e, 'message', 'Unkown Error'))
+      Alert.alert(
+        'Oops!',
+        `An error occurred while submitting the transaction to the network: ${opCode}`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return
     }
 
@@ -205,24 +272,45 @@ export class TransferState extends React.Component<TransferProps, State> {
 
   public async handleSubmit() {
     if (!this.state.targetAddress) {
-      // await swal('Oops!', 'A target public key is required to transfer funds', 'error')
+      Alert.alert(
+        'Oops!',
+        `A target public key is required to transfer funds`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return this.focusElement('transfer-public-key')
     }
     if (!this.state.transferAmount) {
-      // await swal('Oops!', 'A transfer amount is required to transfer funds', 'error')
+      Alert.alert(
+        'Oops!',
+        `A transfer amount is required to transfer funds`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return this.focusElement('transfer-amount')
     }
 
     let privateKey = getActivePrivateKey(this.props.appState)
     if (!privateKey) {
-      // await swal('Oops!', 'Please unlock your account to transfer funds', 'error')
+      Alert.alert(
+        'Oops!',
+        `Please unlock your account to transfer funds`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
       return this.focusElement('wallet-password')
     }
     this.transferKinesis(this.state.targetAddress, this.state.transferAmount)
   }
 
   private focusElement = (id: string): void => {
-    console.warn('fill this:', id)
+    return _.noop()
   }
 
   public handleAddress(text: any) {
@@ -232,7 +320,14 @@ export class TransferState extends React.Component<TransferProps, State> {
   public async handleMemo(text: string) {
     const memo = text
     if (memo.length >= 25) {
-      // return await swal('Oops!', 'The message field must be fewer than 25 characters long', 'error')
+      Alert.alert(
+        'Oops!',
+        `The message field must be fewer than 25 characters long`,
+        [
+          {text: 'OK', onPress: _.noop},
+        ],
+        { cancelable: false }
+      )
     }
     this.setState({memo: memo})
   }
