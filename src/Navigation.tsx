@@ -12,7 +12,7 @@ export class BackNav extends React.Component<any, any> {
   render() {
     return (
       <View style={[styles.headerContent, {paddingHorizontal: 5}]}>
-        <StatusBar barStyle="light-content"/>
+        <StatusBar barStyle="light-content" backgroundColor='#2b3e50'/>
         <TouchableOpacity style={{position: 'absolute', zIndex:3, paddingLeft: 20, paddingRight: 30}} onPress={
           () => {
             this.props.navigation.dispatch(NavigationActions.back())
@@ -40,7 +40,7 @@ export class Header extends React.Component<any, any> {
   render() {
     return (
       <View style={styles.headerContent}>
-        <StatusBar barStyle="light-content"/>
+        <StatusBar barStyle="light-content" backgroundColor='#2b3e50'/>
         <View style={[styles.headerNavSections, {flexDirection: 'row', justifyContent: 'flex-start'}]}>
           <TouchableOpacity style={styles.headerNavButtons} onPress={
             () => {
