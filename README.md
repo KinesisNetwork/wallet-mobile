@@ -1,3 +1,59 @@
+# Getting Started
+
+## Android
+
+Install android-studio. Use the custom installation and ensure the Android SDK and all emulators are installed.
+
+Run android-studio and create a new Project. Target API 23. Click through remaining menus.
+
+When project opens, click "Install missing platform(s)" in the debug menu, followed by "Install missing Build Tool(s)" in the debug menu.
+
+You may also need to do the following:
+ - Set an ENV var called ANDROID_HOME=/Users/samjeston/Library/Android/sdk/ <------ Insert your path here
+
+Launch a device via the AVD Launcher in the top righthand corner
+
+Start a typescript watcher (to compile and watch file changes)
+
+npm run android - occasionally this needs to be run twice to because of race conditions.
+
+## IOS
+
+Run a physical machine or virtual box with High Seria.
+
+Install xcode and ensure that xcode is exposed in the path.
+
+Start a typescript watcher (to compile and watch file changes)
+
+npm run ios - occasionally this needs to be run twice to because of race conditions.
+
+# Info (by Joe)
+
+This has been developed with React-Native.
+
+It is a port of the existing desktop wallet app, with some amendments to make it suitable for mobile development.
+
+The process has been surprisingly lacking in some ways (third party libraries are often broken / buggy / difficult to install) and in other ways quite pleasant to work with (debugging, hot reloads, typescript integration, feels very native).
+
+We have typescript support for our custom logic.
+
+React-Navigation is the library that has been utilised for navigation. Some alternatives where tried (custom navigation / react-native-drawer etc.) but there was either too much overhead or the feature set was too small to continue down those paths. React Navigation is quite opinionated in the sense that diverging from exactly the way it was intended to be used will result in bugs. This resulted in quite a frustrating experience, but now that the quirks have been resolved we have a good proof of work for future projects.
+
+We are using redux for our state management. This was not something that was required with Electron (our desktop app), but it has simplified the passing of state and has eliminated a whole range of bugs caused when using custom wrappers with React Navigation.
+
+We have used React-Native-Vector-Icons for all of our icons. Manually including SVG's is not worth the overhead, but the above library works quite well.
+
+When working with the stellar sdk we were required to pollyfill the base crypto library (which is provided in browser/desktop environments, but not library environments)
+
+If we ever need custom animations, Lottie by AirBnB provides a nice interface for working with them. https://www.lottiefiles.com/ is a list of open source animations.
+
+It is typically recommended to develop against android and then check against IOS periodically (as android is more likely to have issues).
+
+The actual development workflow is as follows (note that depending on your setup, you may not be able to run android and ios at the same time - nested virtualization and shared virtualization may not be supported)
+
+===
+
+# AutoGen README from create-react-native-app
 This project was bootstrapped with [Create React Native App](https://github.com/react-community/create-react-native-app).
 
 Below you'll find information about performing common tasks. The most recent version of this guide is available [here](https://github.com/react-community/create-react-native-app/blob/master/react-native-scripts/template/README.md).

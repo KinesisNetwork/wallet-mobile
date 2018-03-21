@@ -9,9 +9,10 @@
     "rn-nodeify": "github:tradle/rn-nodeify"
   },
   "scripts": {
+    "watch": "tsc -w",
     "start": "react-native start",
+    "postinstall": "./node_modules/.bin/rn-nodeify --hack --install",
     "android": "react-native run-android",
-    "link": "react-native link react-native-vector-icons",
     "ios": "react-native run-ios",
     "test": "node node_modules/jest/bin/jest.js"
   },
