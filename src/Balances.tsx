@@ -29,7 +29,7 @@ type BalanceProps = StateProps & DispatchProps
 export class BalancesState extends React.Component<BalanceProps, any> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <BackNav title='Wallet Balances' navigation={opt.navigation} />
+      header: <BackNav title='Account Balances' navigation={opt.navigation} />
     }
   }
 

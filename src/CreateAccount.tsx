@@ -229,9 +229,9 @@ export class CreateAccountPresentation extends React.Component<{
         <ScrollView style={styles.mainContent}>
         {(this.props.accountView === 'generate') && (
           <View style={{flex: 1, paddingBottom: 60 }}>
-            <Text style={styles.labelFont}>Wallet Password</Text>
+            <Text style={styles.labelFont}>Account Password</Text>
             <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
-            <Text style={styles.labelFont}>Repeat Wallet Password</Text>
+            <Text style={styles.labelFont}>Repeat Account Password</Text>
             <TextInput value={this.props.passwordVerify} style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
             <TouchableOpacity onPress={() => this.props.generate()} style={{
               flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'
@@ -246,9 +246,9 @@ export class CreateAccountPresentation extends React.Component<{
             <TextInput value={this.props.publicKey} style={styles.textInput} onChangeText={(text) => this.props.handlePublic(text)} />
             <Text style={styles.labelFont}>Private Key</Text>
             <TextInput value={this.props.privateKey} style={styles.textInput} onChangeText={(text) => this.props.handlePrivate(text)} />
-            <Text style={styles.labelFont}>Wallet Password</Text>
+            <Text style={styles.labelFont}>Account Password</Text>
             <TextInput value={this.props.password} style={styles.textInput} onChangeText={(text) => this.props.handlePassword(text)} secureTextEntry={true} />
-            <Text style={styles.labelFont}>Repeat Wallet Password</Text>
+            <Text style={styles.labelFont}>Repeat Account Password</Text>
             <TextInput value={this.props.passwordVerify} style={styles.textInput} onChangeText={(text) => this.props.handleVerifyPassword(text)} secureTextEntry={true} />
             <TouchableOpacity onPress={() => this.props.importKeys()} style={{
               flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, padding: 8, borderColor: 'yellow'

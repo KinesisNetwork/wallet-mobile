@@ -10,6 +10,7 @@ When project opens, click "Install missing platform(s)" in the debug menu, follo
 
 You may also need to do the following:
  - Set an ENV var called ANDROID_HOME=/Users/samjeston/Library/Android/sdk/ <------ Insert your path here
+ - Follow the HAXM install instructions outlined here - https://software.intel.com/en-us/android/articles/installation-instructions-for-intel-hardware-accelerated-execution-manager-mac-os-x
 
 Launch a device via the AVD Launcher in the top righthand corner
 

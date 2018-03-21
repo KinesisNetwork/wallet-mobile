@@ -60,7 +60,7 @@ const defaultState = { transactions: [], lastPage: false, currentPage: undefined
 export class TransactionsState extends React.Component<TransactionsProps, IState> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <BackNav title='Wallet Transactions' navigation={opt.navigation} />
+      header: <BackNav title='Account Transactions' navigation={opt.navigation} />
     }
   }
   constructor (props: any) {

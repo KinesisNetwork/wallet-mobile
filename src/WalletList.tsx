@@ -33,7 +33,7 @@ type WalletListProps = StateProps & DispatchProps
 export class WalletListState extends React.Component<WalletListProps, {}> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <BackNav title='Wallet' navigation={opt.navigation} />
+      header: <BackNav title='Account' navigation={opt.navigation} />
     }
   }
   constructor(props: any) {
@@ -61,7 +61,7 @@ export class WalletListState extends React.Component<WalletListProps, {}> {
         <TouchableOpacity onPress={() => this.props.navigation.navigate(Routes.accountScreen)} style={{
           flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, margin: 12, padding: 8, borderColor: 'yellow'
         }}>
-          <Text style={{color: 'yellow'}}>Add Wallet</Text>
+          <Text style={{color: 'yellow'}}>Add Account</Text>
         </TouchableOpacity>
       </View>
     );

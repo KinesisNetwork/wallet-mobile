@@ -37,7 +37,7 @@ export interface State {
 export class TransferState extends React.Component<TransferProps, State> {
   static navigationOptions = (opt: any) => {
     return {
-      header: <BackNav title='Wallet Transfer' navigation={opt.navigation} />
+      header: <BackNav title='Account Transfer' navigation={opt.navigation} />
     }
   }
   constructor (props: any) {
