@@ -5,7 +5,7 @@ import { getActiveWallet } from './helpers/wallets'
 import { isPaymentMultiSig } from './helpers/accounts';
 import { BackNav } from './Navigation';
 import { decryptPrivateKey } from './services/encryption';
-let StellarSdk = require('stellar-sdk')
+let StellarSdk = require('js-kinesis-sdk')
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { AppState } from './store/options/index'
 const stroopsInLumen: number = 10000000

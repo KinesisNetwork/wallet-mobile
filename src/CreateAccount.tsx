@@ -3,7 +3,7 @@ import { Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View 
 import { Header } from './Navigation';
 import { encryptPrivateKey } from './services/encryption';
 import { addNewWallet } from './services/wallet_persistance';
-let StellarBase = require('stellar-sdk')
+let StellarBase = require('js-kinesis-sdk')
 type AccountView = 'import' | 'generate'
 import { Wallet } from './store/options/index';
 import { retrieveWallets } from './services/wallet_persistance';

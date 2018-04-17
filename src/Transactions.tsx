@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, ActivityIndicator, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
-let StellarSdk: any = require('stellar-sdk')
+let StellarSdk: any = require('js-kinesis-sdk')
 import * as _ from 'lodash'
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { AppState } from './store/options/index'

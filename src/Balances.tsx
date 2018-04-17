@@ -4,7 +4,7 @@ import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { decryptPrivateKey } from './services/encryption';
 let { NavigationActions } = require('react-navigation')
-let StellarSdk = require('stellar-sdk')
+let StellarSdk = require('js-kinesis-sdk')
 let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { AppState } from './store/options/index'
