@@ -2,7 +2,7 @@ import React from 'react';
 import { Alert, ActivityIndicator, StyleSheet, Text, View, ScrollView } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
-let StellarSdk: any = require('js-kinesis-sdk')
+import * as StellarSdk from 'js-kinesis-sdk'
 import * as _ from 'lodash'
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { AppState } from './store/options/index'
@@ -119,7 +119,7 @@ export class TransactionsState extends React.Component<TransactionsProps, IState
 
       const transactions = _.flatten(await Promise.all(records.map(async (r: any) => {
         const operations = await r.operations()
-        return operations._embedded.records.map((o: any) => {
+        return operations.records.map((o: any) => {
           return {
             txId: r.id,
             txType: StellarTxType[o.type_i],
