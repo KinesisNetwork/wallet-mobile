@@ -119,7 +119,7 @@ export class TransferState extends React.Component<TransferProps, State> {
       if (Number(amount) < currentBaseReserve) {
         Alert.alert(
           'Oops!',
-          `You are transfering to an account without any funds. The minimum transfer required is ${totalFeeLumens} Kinesis.`,
+          `You are transfering to an account without any funds. The minimum transfer required is ${currentBaseReserve} Kinesis.`,
           [
             {text: 'OK', onPress: _.noop},
           ],
@@ -133,7 +133,7 @@ export class TransferState extends React.Component<TransferProps, State> {
           'Continue with transfer?',
           `
            The account that you are transfering with does not have any funds yet, are you sure you want to continue?
-           The fee will be ${currentBaseFee} Kinesis
+           The fee will be ${totalFeeLumens} Kinesis
           `,
           [
             {text: 'Cancel', onPress: () => res(false), style: 'cancel'},

@@ -6,9 +6,9 @@ const defaultConnections: Connection[] = [{
   networkPassphrase: 'Test SDF Network ; September 2015',
   connectionName: 'Local Development Network'
 }, {
-  horizonServer: 'https://kinesis-test-net.abx.com',
-  networkPassphrase: 'Kinesis Test Network ; February 2018',
-  connectionName: 'Kinesis Test Network'
+  horizonServer: 'https://kinesis-uat-oceania.abx.com',
+  networkPassphrase: 'Kinesis UAT',
+  connectionName: 'Kinesis UAT Network'
 }, {
   horizonServer: 'https://horizon-testnet.stellar.org/',
   networkPassphrase: 'Test SDF Network ; September 2015',
