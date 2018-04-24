@@ -17,6 +17,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+android-keys.sh
+*.keystore
+android/app/*.keystore
 
 # OSX
 .DS_Store

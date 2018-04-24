@@ -85,7 +85,6 @@ export class SettingsPresentation extends React.Component<any, {}> {
       <ScrollView style={styles.mainContent}>
         {
           this.props.appState.allConnections.map((connection: Connection, index: number) => {
-            console.log(this.props.appState.connection)
             let activeNetwork: boolean = connection === this.props.appState.connection
             return (
               <View key={index} style={{marginTop: 4, padding: 12, backgroundColor: activeNetwork ? '#3e5468' : '#2e4458', flexDirection: 'row', justifyContent: 'center'}}>
