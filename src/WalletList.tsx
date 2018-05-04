@@ -1,4 +1,3 @@
-import * as _ from 'lodash'
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import { BackNav } from './Navigation';
@@ -36,31 +35,35 @@ export class WalletListState extends React.Component<WalletListProps, {}> {
       header: <BackNav title='Account' navigation={opt.navigation} />
     }
   }
-  constructor(props: any) {
-    super(props)
-  }
 
   render() {
     return (
       <View style={styles.drawerContent}>
         <ScrollView style={{flex: 1}}>
-          { _.map(this.props.appState.walletList, (wallet: Wallet, index) => {
-            return (
-              <TouchableOpacity key={index} onPress={() => {
+          { this.props.appState.walletList.map((wallet: Wallet, index: number) =>
+            <TouchableOpacity
+              key={wallet.publicKey}
+              onPress={() => {
                 this.props.setActiveWalletIndex(index)
                 this.props.navigation.navigate(Routes.dashboardScreen)
-              }} style={{flexDirection: 'row', justifyContent: 'center', alignContent: 'center', backgroundColor: '#354f67', marginTop: 0, marginBottom: 4, padding: 12}}>
-                <View style={{flex: 1}}>
-                  <Text style={{color: 'white', fontSize: 14}} >{wallet.publicKey}</Text>
-                </View>
-                <IoniconsIcon style={{margin: 8}} name='ios-arrow-forward-outline' size={21} color='#d1edff' />
-              </TouchableOpacity>
-            )
-          }).reverse()}
+              }}
+              style={styles.accountButton}
+            >
+              <View style={{flex: 1}}>
+                <Text style={styles.accountButtonText}>
+                  {wallet.accountName}
+                </Text>
+              </View>
+              <IoniconsIcon
+                style={{margin: 8}}
+                name='ios-arrow-forward-outline'
+                size={21}
+                color='#d1edff'
+              />
+            </TouchableOpacity>
+          )}
         </ScrollView>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate(Routes.accountScreen)} style={{
-          flexDirection: 'row', justifyContent: 'center', alignContent: 'center', borderWidth: 1, margin: 12, padding: 8, borderColor: 'yellow'
-        }}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate(Routes.accountScreen)} style={styles.addAccountButton}>
           <Text style={{color: 'yellow'}}>Add Account</Text>
         </TouchableOpacity>
       </View>
@@ -72,6 +75,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2e4458',
   },
+  accountButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    backgroundColor: '#354f67',
+    marginTop: 0,
+    marginBottom: 4,
+    padding: 12
+  },
+  accountButtonText: {
+    margin: 8,
+    color: 'white',
+    fontSize: 14
+  },
+  addAccountButton: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignContent: 'center',
+    borderWidth: 1,
+    borderColor: 'yellow',
+    margin: 12,
+    padding: 8,
+  }
 });
 
 export const WalletList = connect(mapStateToProps, mapDispatchToProps)(WalletListState)

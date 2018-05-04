@@ -20,7 +20,7 @@ export interface ViewParams {
 export interface Wallet {
   publicKey: string,
   encryptedPrivateKey: string,
-  accountName?: string
+  accountName: string,
 }
 
 export interface Connection {
