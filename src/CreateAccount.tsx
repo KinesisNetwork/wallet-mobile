@@ -1,7 +1,7 @@
 import React from 'react';
 import { Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
-let StellarBase = require('js-kinesis-sdk')
+import StellarBase from 'js-kinesis-sdk'
 import { Header } from './Navigation';
 import { encryptPrivateKey } from './services/encryption';
 import { addNewWallet } from './services/wallet_persistance';
@@ -79,12 +79,12 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
     this.props.setWalletList(wallets)
   }
 
-  public generate = async (): Promise<void> => {
+  public generate = (): void => {
     const { accountName, password, passwordVerify } = this.state
-    const [validName, validPassword] = await Promise.all([
+    const [validName, validPassword] = [
       this.validateCondition(accountName, 'Account Creation Failed', 'Please provide an account name.'),
       this.verifyPassword(password, passwordVerify),
-    ])
+    ]
 
     if (validName && validPassword) {
       const accountKeys = StellarBase.Keypair.random()
@@ -105,25 +105,24 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
     })
   }
 
-  public setAlert = async ({ header, message }: { header: string , message: string }): Promise<boolean> => {
+  public setAlert = ({ header, message }: { header: string , message: string }): boolean => {
     Alert.alert(header, message, [{text: 'OK', onPress: NOOP }], { cancelable: false })
     return false
   }
 
-  public validateCondition = async (condition: string | boolean, header: string, message: string): Promise<boolean> => {
-    if (!condition) return await this.setAlert({ header, message })
+  public validateCondition = (condition: string | boolean, header: string, message: string): boolean => {
+    if (!condition) return this.setAlert({ header, message })
     return true
   }
 
-  public verifyPassword = async (password: string, passwordVerify: string): Promise<boolean> => {
-    const pwCheck = this.validateCondition(password, 'Account Creation Failed', 'Please supply a password')
-    const pvCheck = this.validateCondition(password === passwordVerify, 'Account Creation Failed', 'Please ensure both passwords match')
-    const [validPassword, validPasswordVerify] = await Promise.all([ pwCheck, pvCheck ])
+  public verifyPassword = (password: string, passwordVerify: string): boolean => {
+    const validPassword = this.validateCondition(password, 'Account Creation Failed', 'Please supply a password')
+    const validPasswordVerify = this.validateCondition(password === passwordVerify, 'Account Creation Failed', 'Please ensure both passwords match')
 
     return validPassword && validPasswordVerify
   }
 
-  public importKeys = async (): Promise<boolean> => {
+  public importKeys = (): boolean => {
     const { accountName, password, passwordVerify, privateKey, publicKey } = this.state
 
     const validPublicKey = this.validateCondition(publicKey, 'Account Creation Failed', 'Please provide a valid public key')
@@ -131,7 +130,7 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
     const validName = this.validateCondition(accountName, 'Account Creation Failed', 'Please provide an account name.')
     const validPassword = this.verifyPassword(password, passwordVerify)
 
-    const criteria = await Promise.all([ validPublicKey, validPrivateKey, validName, validPassword ])
+    const criteria = [ validPublicKey, validPrivateKey, validName, validPassword ]
 
     if (criteria.every(c => c)) {
       this.addNewWallet(publicKey, privateKey, password, accountName)

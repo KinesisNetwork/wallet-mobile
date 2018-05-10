@@ -6,7 +6,7 @@ export async function addNewWallet(publicKey: string, encryptedPrivateKey: strin
   const walletEntry = { publicKey, encryptedPrivateKey, accountName }
 
   const wallets = await retrieveWallets()
-  const newWalletList = [walletEntry].concat(wallets)
+  const newWalletList = [walletEntry, ...wallets]
   return saveWallets(newWalletList)
 }
 
