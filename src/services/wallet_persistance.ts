@@ -2,14 +2,12 @@ import { AsyncStorage } from 'react-native'
 import { Wallet } from '../store/options/index';
 const walletsKey = 'wallets'
 
-export function addNewWallet(publicKey: string, encryptedPrivateKey: string): Promise<Wallet[]> {
-  const walletEntry = { publicKey, encryptedPrivateKey }
+export async function addNewWallet(publicKey: string, encryptedPrivateKey: string, accountName: string): Promise<Wallet[]> {
+  const walletEntry = { publicKey, encryptedPrivateKey, accountName }
 
-  return retrieveWallets()
-    .then((wallets: Wallet[]) => {
-      const newWalletList = [walletEntry].concat(wallets || [])
-      return saveWallets(newWalletList)
-    })
+  const wallets = await retrieveWallets()
+  const newWalletList = [walletEntry, ...wallets]
+  return saveWallets(newWalletList)
 }
 
 export async function retrieveWallets(): Promise<Wallet[]> {
@@ -26,11 +24,8 @@ export async function saveWallets(newWalletList: any): Promise<Wallet[]> {
   return newWalletList
 }
 
-export function deleteWallet(accountId: string): Promise<Wallet[]> {
-  return retrieveWallets()
-    .then((wallets: any[]) => {
-      let newList = wallets.filter((wallet: any) => wallet.publicKey !== accountId)
-      return saveWallets(newList)
-    })
+export async function deleteWallet(accountId: string): Promise<Wallet[]> {
+  const wallets = await retrieveWallets()
+  const newList = wallets.filter((wallet: Wallet) => wallet.publicKey !== accountId)
+  return saveWallets(newList)
 }
-

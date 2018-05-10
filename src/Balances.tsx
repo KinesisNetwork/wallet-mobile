@@ -33,9 +33,13 @@ export class BalancesState extends React.Component<BalanceProps, any> {
     }
   }
 
-  constructor (props: any) {
-    super(props)
-    this.state = { account: null, kinesisBalance: 0, accountActivated: false, password: '', decryptedPrivateKey: '' }
+  state = {
+    account: null,
+    accountActivated: false,
+    accountName: '',
+    decryptedPrivateKey: '',
+    kinesisBalance: 0,
+    password: '',
   }
 
   componentDidMount() {
@@ -46,11 +50,6 @@ export class BalancesState extends React.Component<BalanceProps, any> {
     if (this.props !== nextProps) {
       this.loadBalances(nextProps)
     }
-  }
-
-  // React antipattern (this is used via ref)
-  public reloadBalances() {
-    this.loadBalances(this.props)
   }
 
   public async unlockWallet() {
@@ -97,6 +96,7 @@ export class BalancesState extends React.Component<BalanceProps, any> {
         handlePassword={this.handlePassword.bind(this)}
         unlockWallet={this.unlockWallet.bind(this)}
         appState={this.props.appState}
+        accountName={this.state.accountName}
         privateKey={this.state.decryptedPrivateKey}
         password={this.state.password}
         kinesisBalance={this.state.kinesisBalance}
@@ -112,6 +112,7 @@ export class BalancesPresentation extends React.Component<{
   handlePassword: Function,
   unlockWallet: Function,
   deleteWallet: Function,
+  accountName: string,
   password: string,
   privateKey: string,
   kinesisBalance: number,
@@ -126,6 +127,8 @@ export class BalancesPresentation extends React.Component<{
     return (
       <ScrollView style={styles.mainContent}>
         <View style={{paddingBottom: 60}}>
+          <Text style={[styles.labelFont, styles.labelHeader]}>Account Name: </Text>
+          <Text style={styles.labelFont}>{activeWallet.accountName}</Text>
           <Text style={[styles.labelFont, styles.labelHeader]}>Public Key: </Text>
           <Text selectable={true} style={styles.labelFont}>{activeWallet.publicKey}</Text>
           <Text style={[styles.labelFont, styles.labelHeader]}>Reveal Private Key:</Text>
