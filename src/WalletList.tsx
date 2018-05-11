@@ -1,9 +1,10 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity, Clipboard } from 'react-native'
+import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
+let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
+
 import { BackNav } from './Navigation';
 import { Routes } from './Routing'
-let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
-import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import { OptionActionCreators } from './store/root-actions'
 import { AppState, Wallet } from './store/options/index'
 
@@ -47,6 +48,7 @@ export class WalletListState extends React.Component<WalletListProps, {}> {
                 this.props.setActiveWalletIndex(index)
                 this.props.navigation.navigate(Routes.dashboardScreen)
               }}
+              onLongPress={ () => { console.log('publick key:', wallet.publicKey) } }
               style={styles.accountButton}
             >
               <View style={{flex: 1}}>
@@ -70,6 +72,7 @@ export class WalletListState extends React.Component<WalletListProps, {}> {
     );
   }
 }
+
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
@@ -97,6 +100,10 @@ const styles = StyleSheet.create({
     borderColor: 'yellow',
     margin: 12,
     padding: 8,
+  },
+  dropdownContainer: {
+    flex: 1,
+    backgroundColor: 'white',
   }
 });
 

@@ -3,6 +3,7 @@ import React from 'react'
 import { View } from 'react-native'
 import store from './store'
 import { GenerateAccount, ImportAccount } from './CreateAccount'
+import Notification from './Notification'
 import { Balances } from './Balances'
 import { Transactions } from './Transactions'
 import { WalletList } from './WalletList'
@@ -163,7 +164,7 @@ let WalletStack = StackNavigator({
     initialRouteName: Routes.walletList,
     headerMode: 'none',
     cardStyle: {
-      backgroundColor: '#000'
+      backgroundColor: '#2b3e50'
     }
   }
 );
@@ -183,31 +184,20 @@ let RootStack = StackNavigator({
     initialRouteName: Routes.accountScreen,
     headerMode: 'float',
     cardStyle: {
-      backgroundColor: '#000'
+      backgroundColor: '#2b3e50'
     }
   }
 );
 
 export default class App extends React.Component<null, null> {
-  constructor (props: any) {
-    super(props)
-  }
-
-  public componentDidMount() {
-    // retrieveWallets()
-    //   .then((walletList: Wallet[]) => {
-    //     // this.setWalletList(walletList)
-    //   })
-  }
-
   render() {
     return (
       <Provider store={store}>
-        <View style={{flex: 1, backgroundColor: '#000'}}>
+        <View style={{flex: 1, backgroundColor: '#2b3e50'}}>
+          <Notification />
           <RootStack />
         </View>
       </Provider>
     )
   }
 }
-
