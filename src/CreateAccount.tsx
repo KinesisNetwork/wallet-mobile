@@ -1,17 +1,15 @@
 import React from 'react';
-import { Alert, TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
+import { TouchableOpacity, ScrollView, StyleSheet, TextInput, Text, View } from 'react-native'
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
 import StellarBase from 'js-kinesis-sdk'
 import { Header } from './Navigation';
 import { encryptPrivateKey } from './services/encryption';
-import { addNewWallet } from './services/wallet_persistance';
-import { Wallet } from './store/options/index';
-import { retrieveWallets } from './services/wallet_persistance';
-import { OptionActionCreators } from './store/root-actions'
-import { AppState } from './store/options/index'
+import { addNewWallet, retrieveWallets } from './services/wallet_persistance';
+import { OptionActionCreators, NotificationActionCreators } from './store/root-actions'
+import { AppState, Wallet } from './store/options'
+import { NotificationState } from './store/notification'
 import { Routes } from './Routing';
 
-const NOOP: () => void = () => {}
 const ACCOUNT_CREATION_ERROR = 'Account Creation Failed'
 
 enum AccountFields {
@@ -47,12 +45,14 @@ type AccountProps = StateProps & DispatchProps
 
 interface StateProps {
   appState: AppState,
-  navigation: any
+  navigation: any,
+  notification: NotificationState,
 }
 
 interface DispatchProps {
   setWalletList: Function,
   setActiveWalletIndex: Function,
+  showNotification: Function,
 }
 
 interface CreateAccountProps extends StateProps, DispatchProps {
@@ -80,7 +80,10 @@ const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, own
   },
   setActiveWalletIndex: async (index: number) => {
     dispatch(OptionActionCreators.setActiveWalletIndex.create(index))
-  }
+  },
+  showNotification: (payload: { type: string, message: string }) => {
+    dispatch(NotificationActionCreators.showNotification.create(payload))
+  },
 })
 
 const defaultState: AccountState = {
@@ -105,6 +108,7 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
   }
 
   public generate = (): boolean => {
+
     const { accountName, password, passwordVerify } = this.state
     const [validName, validPassword] = [
       this.validateField({ field: AccountFields.accountName, condition: accountName, message: AccountFieldErrors.accountName }),
@@ -115,12 +119,13 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
       const accountKeys = StellarBase.Keypair.random()
       const [accountKey, privateKey]: any = [accountKeys.publicKey(), accountKeys.secret()]
       this.addNewWallet(accountKey, privateKey, password, accountName)
-      console.log('state: ', this.state)
-      return true
+      this.props.showNotification({ type: 'success', message: 'Account created'})
 
+      return true
     }
-    console.log('state: ', this.state)
-    // this.handleStateFieldUpdate(AccountFields.hasError)(true)
+
+    this.props.showNotification({ type: 'error', message: ACCOUNT_CREATION_ERROR })
+
     return false
   }
 
@@ -136,9 +141,13 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
 
     if (criteria.every(c => c)) {
       this.addNewWallet(publicKey, privateKey, password, accountName)
+      this.props.showNotification({ type: 'success', message: 'Account imported'})
+
       return true
     }
-    // this.handleStateFieldUpdate(AccountFields.hasError)(true)
+
+    this.props.showNotification({ type: 'error', message: ACCOUNT_CREATION_ERROR })
+
     return false
   }
 
@@ -156,19 +165,23 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
 
   private validateField = ({ condition, field, message }: { condition: string | boolean, field: string, message: string }): boolean => {
     if (!condition) {
-      this.setState(({ fieldErrors }) => ({
+      this.setState(state => ({
+        ...state,
         [AccountFields.hasError]: true,
         [AccountFields.fieldErrors]: {
-          ...fieldErrors,
+          ...state.fieldErrors,
           [field]: message
         }
       }) )
       return false
     }
 
-    this.setState(({ fieldErrors }) => {
+    this.setState(({ fieldErrors, ...otherState }) => {
       delete fieldErrors[field]
+
       return {
+        ...otherState,
+        [AccountFields.hasError]: false,
         fieldErrors
       }
     })
@@ -180,11 +193,6 @@ export class CreateAccount extends React.Component<CreateAccountProps, AccountSt
     const validPassword = this.validateField({ field: AccountFields.password, condition: password, message: AccountFieldErrors.password })
     return validPassword && this.validateField({ field: AccountFields.passwordVerify, condition: password === passwordVerify, message: AccountFieldErrors.passwordVerify })
   }
-
-  // public setAlert = ({ header, message }: { header: string , message: string }): boolean => {
-  //   Alert.alert(header, message, [{text: 'OK', onPress: NOOP }], { cancelable: false })
-  //   return false
-  // }
 
   public handleStateFieldUpdate = (field: keyof AccountState) => (value: string): void => {
     this.setState(currentState => ({
@@ -240,7 +248,7 @@ export const CreateAccountPresentation: React.SFC<AccountPresentationProps> = ({
   passwordVerify,
   publicKey,
   privateKey
-}) => { console.log('fieldErrors', fieldErrors, 'hasError:', hasError); return (
+}) => (
   <ScrollView style={StyleSheet.flatten([styles.mainContent, hasError && styles.mainContentError])}>
   {(accountView === 'generate') && (
     <View style={styles.panelContent}>
@@ -250,9 +258,11 @@ export const CreateAccountPresentation: React.SFC<AccountPresentationProps> = ({
 
       <Text style={styles.labelFont}>{AccountFieldTitles.password}</Text>
       <TextInput underlineColorAndroid={'transparent'} value={password} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.password)} secureTextEntry />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.password]}</Text>
 
       <Text style={styles.labelFont}>{AccountFieldTitles.passwordVerify}</Text>
       <TextInput underlineColorAndroid={'transparent'} value={passwordVerify} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.passwordVerify)} secureTextEntry />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.passwordVerify]}</Text>
 
       <TouchableOpacity onPress={() => generate()} style={styles.createAccountButton}>
         <Text style={styles.createAccountButtonText}>Create Account</Text>
@@ -263,21 +273,31 @@ export const CreateAccountPresentation: React.SFC<AccountPresentationProps> = ({
     <View style={styles.panelContent}>
       <Text style={styles.labelFont}>{AccountFieldTitles.accountName}</Text>
       <TextInput value={accountName} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.accountName)} />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.accountName]}</Text>
+
       <Text style={styles.labelFont}>{AccountFieldTitles.password}</Text>
       <TextInput value={password} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.password)} secureTextEntry />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.password]}</Text>
+
       <Text style={styles.labelFont}>{AccountFieldTitles.passwordVerify}</Text>
       <TextInput value={passwordVerify} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.passwordVerify)} secureTextEntry />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.passwordVerify]}</Text>
+
       <Text style={styles.labelFont}>{AccountFieldTitles.publicKey}</Text>
       <TextInput value={publicKey} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.publicKey)} />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.publicKey]}</Text>
+
       <Text style={styles.labelFont}>{AccountFieldTitles.privateKey}</Text>
       <TextInput value={privateKey} style={styles.textInput} onChangeText={handleStateFieldUpdate(AccountFields.privateKey)} />
+      <Text style={styles.errorText}>{fieldErrors[AccountFields.privateKey]}</Text>
+
       <TouchableOpacity onPress={importKeys} style={styles.createAccountButton}>
         <Text style={styles.createAccountButtonText}>Import Account</Text>
       </TouchableOpacity>
     </View>
   )}
   </ScrollView>
-)}
+)
 
 const styles = StyleSheet.create({
   mainContent: {
@@ -316,6 +336,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 8,
     borderColor: 'yellow',
+    marginTop: 10,
   },
   createAccountButtonText: {
     color: 'yellow'

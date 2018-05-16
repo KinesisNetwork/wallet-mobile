@@ -1,6 +1,6 @@
 import { Provider } from 'react-redux'
 import React from 'react'
-import { View } from 'react-native'
+import { View, StatusBar, StyleSheet, Platform } from 'react-native'
 import store from './store'
 import { GenerateAccount, ImportAccount } from './CreateAccount'
 import Notification from './Notification'
@@ -11,6 +11,7 @@ import { Settings } from './Settings'
 import { Transfer } from './Transfer';
 let { StackNavigator, TabNavigator, TabBarBottom } = require('react-navigation')
 let SimpleLineIconsIcon = require('react-native-vector-icons/SimpleLineIcons').default;
+let Ionicon = require('react-native-vector-icons/Ionicons').default;
 
 export const enum Routes {
   accountScreen = 'Account Screen',
@@ -37,13 +38,14 @@ let CreateAccount = TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         if (routeName === Routes.accountImport) {
-          iconName = `login`;
+          iconName = 'md-download';
         } else if (routeName === Routes.accountGenerate) {
-          iconName = `user-follow`;
+          iconName = 'md-add';
         }
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
-        return <SimpleLineIconsIcon name={iconName} size={18} color={tintColor} />;
+        return <Ionicon name={iconName} size={18} color={tintColor} />
+        // return <SimpleLineIconsIcon name={iconName} size={18} color={tintColor} />;
       },
     }),
     tabBarOptions: {
@@ -78,7 +80,7 @@ let SettingsScreen = TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         if (routeName === Routes.selectNetwork) {
-          iconName = `globe`;
+          iconName = 'globe';
         }
         // You can return any component that you like here! We usually use an
         // icon component from react-native-vector-icons
@@ -119,11 +121,11 @@ let DashboardScreen = TabNavigator(
         const { routeName } = navigation.state;
         let iconName;
         if (routeName === Routes.dashboardBalances) {
-          iconName = `wallet`;
+          iconName = 'wallet';
         } else if (routeName === Routes.dashboardTransfer) {
-          iconName = `logout`;
+          iconName = 'logout';
         } else if (routeName === Routes.dashboardTransactions) {
-          iconName = `tag`;
+          iconName = 'tag';
         }
 
         // You can return any component that you like here! We usually use an
@@ -189,11 +191,35 @@ let RootStack = StackNavigator({
   }
 );
 
+const STATUSBAR_HEIGHT = Platform.OS === 'ios' ? 20 : StatusBar.currentHeight;
+
+const styles = StyleSheet.create({
+  container: {
+    display: 'flex',
+    flex: 1,
+  },
+  statusBar: {
+    height: STATUSBAR_HEIGHT,
+  },
+})
+
+class StatusBarWithBackground extends React.PureComponent<any, any> {
+  render() {
+    const { backgroundColor, ...rest} = this.props
+    return (
+      <View style={[styles.statusBar, { backgroundColor }]}>
+        <StatusBar translucent backgroundColor={backgroundColor} {...rest} />
+      </View>
+    )
+  }
+}
+
 export default class App extends React.Component<null, null> {
   render() {
     return (
       <Provider store={store}>
-        <View style={{flex: 1, backgroundColor: '#2b3e50'}}>
+        <View style={styles.container}>
+          <StatusBarWithBackground barStyle='light-content' backgroundColor='#2b3e50' />
           <Notification />
           <RootStack />
         </View>

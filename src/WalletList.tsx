@@ -48,7 +48,6 @@ export class WalletListState extends React.Component<WalletListProps, {}> {
                 this.props.setActiveWalletIndex(index)
                 this.props.navigation.navigate(Routes.dashboardScreen)
               }}
-              onLongPress={ () => { console.log('publick key:', wallet.publicKey) } }
               style={styles.accountButton}
             >
               <View style={{flex: 1}}>
