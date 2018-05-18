@@ -1,12 +1,13 @@
 import * as _ from 'lodash'
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
-import { OptionActionCreators } from './store/root-actions'
+import { OptionActionCreators, NotificationActionCreators } from './store/root-actions'
 import React from 'react'
 import { TouchableOpacity, StyleSheet, Text, ScrollView, View } from 'react-native'
 let FeatherIcon = require('react-native-vector-icons/Feather').default;
 import { BackNav } from './Navigation'
 import { Connection } from './store/options/index';
 import { AppState } from './store/options/index'
+import { NotificationState } from './store/notification'
 
 interface StateProps {
   appState: AppState,
@@ -20,12 +21,16 @@ const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, 
 
 interface DispatchProps {
   changeConnection: (connection: Connection) => any
+  showNotification: (payload: NotificationState) => any
 }
 
 const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({
   changeConnection: async (connection: Connection) => {
     dispatch(OptionActionCreators.changeConnection.create(connection))
-  }
+  },
+  showNotification: (payload: NotificationState) => {
+    dispatch(NotificationActionCreators.showNotification.create(payload))
+  },
 })
 
 type SettingsProps = StateProps & DispatchProps
@@ -46,26 +51,31 @@ export class SettingsState extends React.Component<SettingsProps, {horizonServer
     console.warn(nextProps)
   }
 
-  public async changeHorizonServer(horizonServer: string) {
+  public changeHorizonServer = async (horizonServer: string) => {
     this.setState({horizonServer})
   }
 
-  public async changeNetworkPassphrase(networkPassphrase: string) {
+  public changeNetworkPassphrase = async (networkPassphrase: string) => {
     this.setState({networkPassphrase})
   }
 
-  public async changeConnectionName(connectionName: string) {
+  public changeConnectionName = async (connectionName: string) => {
     this.setState({connectionName})
+  }
+
+  public changeConnection = async (connection: any) => {
+    await this.props.changeConnection(connection)
+    this.props.showNotification({ type: 'success', message: 'Network Changed'})
   }
 
   render() {
     return (
       <SettingsPresentation
         appState={this.props.appState}
-        changeConnectionName={this.changeConnectionName.bind(this)}
-        changeConnection={this.props.changeConnection.bind(this)}
-        changeNetworkPassphrase={this.changeNetworkPassphrase.bind(this)}
-        changeHorizonServer={this.changeHorizonServer.bind(this)}
+        changeConnectionName={this.changeConnectionName}
+        changeConnection={this.changeConnection}
+        changeNetworkPassphrase={this.changeNetworkPassphrase}
+        changeHorizonServer={this.changeHorizonServer}
         horizonServer={this.state.horizonServer}
         networkPassphrase={this.state.networkPassphrase}
         connectionName={this.state.connectionName}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, TouchableOpacity, ScrollView, StyleSheet, Button, TextInput, Text, View } from 'react-native'
+import { Alert, TouchableOpacity, ScrollView, StyleSheet, Button, TextInput, Text, View, ActivityIndicator } from 'react-native'
 import { getActiveWallet } from './helpers/wallets';
 import { BackNav } from './Navigation';
 import { decryptPrivateKey } from './services/encryption';
@@ -7,8 +7,11 @@ let { NavigationActions } = require('react-navigation')
 let StellarSdk = require('js-kinesis-sdk')
 let IoniconsIcon = require('react-native-vector-icons/Ionicons').default;
 import { connect, MapDispatchToProps, MapStateToProps } from 'react-redux'
-import { AppState } from './store/options/index'
+import { AppState, Wallet } from './store/options'
 import * as _ from 'lodash'
+import { OptionActionCreators, NotificationActionCreators } from './store/root-actions'
+import { deleteWallet } from './services/wallet_persistance';
+
 
 interface StateProps {
   appState: AppState,
@@ -20,9 +23,23 @@ const mapStateToProps: MapStateToProps<StateProps, any, any> = ({options}: any, 
   ...ownProps
 })
 
-interface DispatchProps { }
+interface DispatchProps {
+  setWalletList: Function,
+  setActiveWalletIndex: Function,
+  showNotification: Function,
+}
 
-const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({})
+const mapDispatchToProps: MapDispatchToProps<DispatchProps, {}> = (dispatch, ownProps) => ({
+  showNotification: (payload: { type: string, message: string }) => {
+    dispatch(NotificationActionCreators.showNotification.create(payload))
+  },
+  setWalletList: async (walletList: Wallet[]) => {
+    dispatch(OptionActionCreators.setWalletList.create(walletList))
+  },
+  setActiveWalletIndex: async (index: number) => {
+    dispatch(OptionActionCreators.setActiveWalletIndex.create(index))
+  },
+})
 
 type BalanceProps = StateProps & DispatchProps
 
@@ -72,7 +89,25 @@ export class BalancesState extends React.Component<BalanceProps, any> {
     this.setState({password})
   }
 
-  public deleteWallet() {
+  public requestDeleteWallet = (wallet: Wallet) => {
+    Alert.alert(
+      'Delete Wallet',
+      'Are you sure?',
+      [
+        {text: 'Cancel', onPress: () => _.noop, style: 'cancel'},
+        {text: 'Delete', onPress: () => {
+          this.props.showNotification({ type: 'none', message: <ActivityIndicator /> })
+          this.deleteWallet(wallet)
+        }, style: 'destructive'},
+      ]
+    )
+  }
+
+  public deleteWallet = async (wallet: Wallet) => {
+    const walletList = await deleteWallet(wallet.publicKey)
+    this.props.setWalletList(walletList)
+    this.props.setActiveWalletIndex(0)
+    this.props.showNotification({ type: 'success', message: 'Wallet Deleted' })
     this.props.navigation.dispatch(NavigationActions.back())
   }
 
@@ -92,7 +127,7 @@ export class BalancesState extends React.Component<BalanceProps, any> {
   render() {
     return (
       <BalancesPresentation
-        deleteWallet={this.deleteWallet.bind(this)}
+        deleteWallet={this.requestDeleteWallet}
         handlePassword={this.handlePassword.bind(this)}
         unlockWallet={this.unlockWallet.bind(this)}
         appState={this.props.appState}
@@ -111,7 +146,7 @@ export class BalancesPresentation extends React.Component<{
   appState: AppState,
   handlePassword: Function,
   unlockWallet: Function,
-  deleteWallet: Function,
+  deleteWallet: (wallet: Wallet) => void,
   accountName: string,
   password: string,
   privateKey: string,
@@ -152,8 +187,13 @@ export class BalancesPresentation extends React.Component<{
             <Text style={[styles.labelFont, styles.labelHeader]}>Kinesis Balance: </Text>
             <Text selectable={true} style={styles.labelFont}>{this.props.kinesisBalance}</Text>
           </View>
-          <View style={{display: 'none'}}>
-            <Button title='Delete wallet' onPress={() => this.props.deleteWallet()} />
+          <View>
+            <Button
+              title='Delete wallet'
+              color='crimson'
+              onPress={() => this.props.deleteWallet(activeWallet)}
+              accessibilityLabel='Delete selected wallet'
+            />
           </View>
 
         </View>

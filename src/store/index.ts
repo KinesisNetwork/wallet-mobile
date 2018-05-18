@@ -1,12 +1,15 @@
 import { createStore, combineReducers } from 'redux'
-import { AppState as OptionState, options } from './options/'
+import { AppState as OptionState, options } from './options'
+import { NotificationState, notification } from './notification'
 
 export interface AppState {
-  options: OptionState
+  options: OptionState,
+  notification: NotificationState,
 }
 
 const s = combineReducers<AppState>({
   options,
+  notification,
 })
 
 const w: any = window
